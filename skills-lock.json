@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "feature-sliced-design": {
+      "source": "feature-sliced/skills",
+      "sourceType": "github",
+      "skillPath": "feature-sliced-design/SKILL.md",
+      "computedHash": "e2b86275fffc384951c307f0f6285d11fa9fdfc2a3738581189567a5fc9a1b38"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "15814874f7875a535818bf855d9f7c1678aafadcfc5336553b9909ae7f074877"
+    },
+    "phosphor-icons": {
+      "source": "lasaths/phosphor-icons",
+      "sourceType": "github",
+      "skillPath": "skills/phosphor-icons/SKILL.md",
+      "computedHash": "8d7c35765ccda0d28068dc11663d769d6fa14c29fa79eba47d69b4ad26ed73eb"
+    }
+  }
+}
