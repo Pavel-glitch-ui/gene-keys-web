@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import type { TestSchema } from '@/entities/test/model/types';
 import { Badge } from '@/shared/ui/Badge';
 import { Button } from '@/shared/ui/Button';
@@ -28,11 +29,15 @@ export function TestCard({ test, onStart }: TestCardProps) {
   };
 
   return (
-    <article className="group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-black border border-white/10 hover:border-purple-500/50 transition-colors duration-200">
+    <motion.article
+      whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
+      whileTap={{ scale: 0.985 }}
+      className="group relative flex flex-col justify-between p-5 sm:p-7 rounded-2xl bg-black border border-white/10 hover:border-purple-500/50 transition-colors duration-200"
+    >
       <div>
         {/* Top bar */}
         <div className="flex items-center justify-between gap-3 mb-5">
-          <div className="w-11 h-11 rounded-xl bg-black border border-white/15 flex items-center justify-center">
+          <div className="w-11 h-11 rounded-xl bg-black border border-white/15 flex items-center justify-center group-hover:border-purple-500/30 transition-colors">
             {getIcon(test.id)}
           </div>
           <Badge variant="purple">{test.tag}</Badge>
@@ -62,11 +67,12 @@ export function TestCard({ test, onStart }: TestCardProps) {
           fullWidth
           size="md"
           onClick={() => onStart(test.id)}
+          className="min-h-[44px]"
         >
           <span>Пройти исследование</span>
           <ArrowUpRight size={16} weight="bold" />
         </Button>
       </div>
-    </article>
+    </motion.article>
   );
 }

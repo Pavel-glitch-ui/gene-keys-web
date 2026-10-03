@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import type { Question } from '@/entities/test/model/types';
 import { LABELS_FOR_ANSWERS } from '@/shared/lib/scoring';
 import { Check } from '@phosphor-icons/react';
@@ -24,9 +25,9 @@ export function ScaleStep({ question, selectedAnswer, onSelect }: ScaleStepProps
   }, [onSelect]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5 sm:gap-6">
       <div>
-        <h3 className="text-xl sm:text-2xl font-bold text-white leading-snug mb-2">
+        <h3 className="text-lg sm:text-2xl font-bold text-white leading-snug mb-1.5 sm:mb-2">
           {question.text}
         </h3>
         <p className="text-xs sm:text-sm text-zinc-400">
@@ -38,21 +39,22 @@ export function ScaleStep({ question, selectedAnswer, onSelect }: ScaleStepProps
         {LABELS_FOR_ANSWERS.map((label, idx) => {
           const isSelected = selectedAnswer === idx;
           return (
-            <button
+            <motion.button
               key={idx}
               type="button"
               role="radio"
               aria-checked={isSelected}
               onClick={() => onSelect(idx)}
-              className={`group flex items-center justify-between p-3.5 sm:p-4 rounded-xl text-left text-sm font-medium transition-all duration-150 cursor-pointer select-none border ${
+              whileTap={{ scale: 0.985 }}
+              className={`group flex items-center justify-between p-3.5 sm:p-4 rounded-xl text-left text-sm font-medium transition-colors cursor-pointer select-none border min-h-[50px] ${
                 isSelected
                   ? 'bg-black text-white border-purple-500 shadow-none'
-                  : 'bg-black text-zinc-300 border-white/10 hover:border-white/20 hover:text-white'
+                  : 'bg-black text-zinc-300 border-white/10 hover:border-white/20 hover:text-white active:bg-neutral-900'
               }`}
             >
               <div className="flex items-center gap-3">
                 <span
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-colors ${
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-colors shrink-0 ${
                     isSelected
                       ? 'bg-purple-600 text-white'
                       : 'bg-neutral-900 text-zinc-400 group-hover:text-white'
@@ -60,18 +62,18 @@ export function ScaleStep({ question, selectedAnswer, onSelect }: ScaleStepProps
                 >
                   {idx + 1}
                 </span>
-                <span>{label}</span>
+                <span className="text-xs sm:text-sm">{label}</span>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-mono text-zinc-600 group-hover:text-zinc-400 transition-colors">
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="hidden sm:inline text-[11px] font-mono text-zinc-600 group-hover:text-zinc-400 transition-colors">
                   [{idx + 1}]
                 </span>
                 {isSelected && (
                   <Check size={16} weight="bold" className="text-purple-400" />
                 )}
               </div>
-            </button>
+            </motion.button>
           );
         })}
       </div>

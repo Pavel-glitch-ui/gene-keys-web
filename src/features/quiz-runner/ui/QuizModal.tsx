@@ -174,10 +174,10 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
       {phase === 'intake' && (
         <div>
           <div className="text-center mb-6">
-            <span className="text-xs uppercase tracking-widest text-purple-700 dark:text-purple-400 font-semibold">
+            <span className="text-xs uppercase tracking-widest text-purple-400 font-semibold">
               Личное исследование
             </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mt-1">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">
               {test.title}
             </h2>
           </div>
@@ -200,11 +200,11 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
         <div className="flex flex-col gap-6">
           {/* Top Progress & Step counter */}
           <div>
-            <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 mb-2">
-              <span className="font-medium text-purple-900 dark:text-purple-300">
+            <div className="flex items-center justify-between text-xs text-zinc-400 mb-2">
+              <span className="font-medium text-white">
                 {test.title}
               </span>
-              <span className="font-mono">
+              <span className="font-mono text-zinc-400">
                 {step + 1} / {test.questions.length}
               </span>
             </div>
@@ -229,13 +229,13 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
           </div>
 
           {/* Navigation Bottom Controls */}
-          <div className="flex items-center justify-between pt-4 border-t border-purple-100 dark:border-purple-900/40">
+          <div className="flex items-center justify-between pt-4 border-t border-white/10">
             <Button
               type="button"
               variant="ghost"
               size="md"
               onClick={handleBack}
-              className="gap-1.5 text-stone-600 dark:text-stone-300"
+              className="gap-1.5 text-zinc-400 hover:text-white"
             >
               <ArrowLeft size={16} />
               <span>Назад</span>
