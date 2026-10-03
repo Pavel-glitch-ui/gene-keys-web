@@ -39,7 +39,8 @@ export async function POST(req: NextRequest) {
         `💬 *Отзыв:* ${comment.trim()}\n` +
         `🤝 *CustDev готов:* ${custdevReady ? 'Да' : 'Нет'}`;
 
-      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      const apiRoot = (process.env.TELEGRAM_API_ROOT || 'https://api.telegram.org').replace(/\/+$/, '');
+      fetch(`${apiRoot}/bot${botToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -63,7 +63,8 @@ export async function POST(req: NextRequest) {
         `✨ Здравствуйте, ${profile?.name || 'друг'}!\n\nВаш персональный хологенетический профиль по исследованию «${testTitle || 'Тень'}» сформирован с помощью ИИ и готов в PDF.\n\nВнутри: Активация, Венера, Жемчужина и 4-недельная программа перехода Тени в Дар.`
       );
 
-      const tgResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
+      const apiRoot = (process.env.TELEGRAM_API_ROOT || 'https://api.telegram.org').replace(/\/+$/, '');
+      const tgResponse = await fetch(`${apiRoot}/bot${botToken}/sendDocument`, {
         method: 'POST',
         body: formData,
       });
