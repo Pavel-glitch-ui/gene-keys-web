@@ -19,10 +19,15 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: 'Тень — пространство самопознания',
-  description: 'Пространство самопознания: четыре авторских исследования, натальная карта, персональный разбор и план практик на четыре недели.',
+  title: 'Тень — пространство глубинной диагностики',
+  description: 'Пространство самопознания: четыре авторских исследования, хологенетический профиль, персональный разбор и план практик на четыре недели.',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/icon.png', sizes: '528x528', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/icon.png',
+    apple: '/icon.png',
   },
 };
 

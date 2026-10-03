@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ShieldCheck, List, X, Compass, Info } from '@phosphor-icons/react';
 
+import Image from 'next/image';
+
 export function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,8 +29,18 @@ export function Header() {
         >
           {mobileMenuOpen ? <X size={20} /> : <List size={20} />}
         </button>
-        <Link href="/" className="font-bold text-lg text-white">
-          тень®
+        <Link href="/" className="inline-flex items-center gap-2 font-bold text-lg text-white">
+          <div className="relative w-6 h-6 rounded-full overflow-hidden border border-white/20 shrink-0">
+            <Image
+              src="/logo.png"
+              alt="Логотип тень"
+              width={24}
+              height={24}
+              className="w-full h-full object-cover"
+              priority
+            />
+          </div>
+          <span>тень®</span>
         </Link>
       </div>
 

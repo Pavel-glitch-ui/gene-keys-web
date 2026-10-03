@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Compass, Info, Sparkle } from '@phosphor-icons/react';
 
+import Image from 'next/image';
+
 export function Sidebar() {
   const pathname = usePathname();
 
@@ -28,9 +30,16 @@ export function Sidebar() {
       <div>
         {/* Brand */}
         <Link href="/" className="inline-flex items-center gap-2.5 mb-1 group">
-          <span className="w-8 h-8 rounded-full bg-black border border-white/20 flex items-center justify-center text-white text-sm transition-transform group-hover:scale-105">
-            ◐
-          </span>
+          <div className="relative w-8 h-8 rounded-full overflow-hidden border border-white/20 shrink-0 transition-transform group-hover:scale-105">
+            <Image
+              src="/logo.png"
+              alt="Логотип тень"
+              width={32}
+              height={32}
+              className="w-full h-full object-cover"
+              priority
+            />
+          </div>
           <div className="flex items-baseline gap-1">
             <span className="text-xl font-bold tracking-tight text-white transition-colors group-hover:text-purple-300">
               тень

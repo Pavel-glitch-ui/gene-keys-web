@@ -137,18 +137,41 @@ export async function generateAssessmentPdf(params: GeneratePdfParams): Promise<
     color: pureBlack,
   });
 
-  // Brand header
+  // Brand header with logo image
+  const logoPath = path.resolve(process.cwd(), 'public/logo.png');
+  let logoImg: any = null;
+  if (fs.existsSync(logoPath)) {
+    try {
+      logoImg = await doc.embedPng(fs.readFileSync(logoPath));
+      page1.drawImage(logoImg, {
+        x: 60,
+        y: H - 100,
+        width: 34,
+        height: 34,
+      });
+      // Also draw large emblem on cover right side
+      page1.drawImage(logoImg, {
+        x: W - 180,
+        y: 130,
+        width: 110,
+        height: 110,
+      });
+    } catch (e) {
+      console.error('[PDF Embed Logo Error]:', e);
+    }
+  }
+
   page1.drawText('тень®', {
-    x: 60,
-    y: H - 90,
-    size: 28,
+    x: logoImg ? 104 : 60,
+    y: H - 88,
+    size: 26,
     font: fontBold,
     color: white,
   });
 
   page1.drawText('П Р О С Т Р А Н С Т В О   Г Л У Б И Н Н О Й   Д И А Г Н О С Т И К И', {
-    x: 60,
-    y: H - 112,
+    x: logoImg ? 104 : 60,
+    y: H - 106,
     size: 7.5,
     font: fontBody,
     color: purpleAccent,
