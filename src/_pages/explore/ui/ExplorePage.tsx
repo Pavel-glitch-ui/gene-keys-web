@@ -47,26 +47,26 @@ export function ExplorePage() {
       {/* Intro Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white leading-tight">
             А кто ты на самом деле?
           </h1>
-          <p className="text-zinc-400 text-sm sm:text-base mt-2 max-w-xl leading-relaxed">
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base mt-2 max-w-xl leading-relaxed">
             Откройте свои сильные стороны, теневые триггеры и потенциал роста через четыре авторских исследования.
           </p>
         </div>
-        <span className="text-xs text-zinc-500 hidden sm:block">
+        <span className="text-xs text-zinc-400 dark:text-zinc-500 hidden sm:block">
           Глубинная диагностика личности
         </span>
       </div>
 
-      {/* Feature Showcase Card in True Black with Mobile-First layout & CTA */}
-      <div className="relative overflow-hidden p-5 sm:p-8 md:p-10 rounded-2xl bg-black text-white border border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
+      {/* Feature Showcase Card in Alabaster / True Black */}
+      <div className="relative overflow-hidden p-5 sm:p-8 md:p-10 rounded-2xl bg-white dark:bg-black text-zinc-900 dark:text-white border border-zinc-200/80 dark:border-white/10 shadow-sm dark:shadow-none flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 transition-colors">
         <div className="flex-1 flex flex-col gap-4 z-10 w-full">
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-bold leading-tight text-white">
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-bold leading-tight text-zinc-900 dark:text-white">
             Иногда ответ — это выбор.<br />
             А иногда — целая история.
           </h2>
-          <p className="text-zinc-400 text-xs sm:text-sm md:text-base leading-relaxed max-w-lg">
+          <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm md:text-base leading-relaxed max-w-lg">
             Отвечайте на шкалы или дополняйте ответы своими словами. Получите персональный хологенетический портрет и пошаговый план трансформации в Telegram.
           </p>
 
@@ -80,7 +80,7 @@ export function ExplorePage() {
               <span>Выбрать исследование</span>
               <ArrowDown size={16} weight="bold" />
             </Button>
-            <div className="inline-flex items-center gap-2 text-xs text-zinc-400 px-1 py-1">
+            <div className="inline-flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 px-1 py-1">
               <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
               <span>Без правильных и неправильных ответов</span>
             </div>
@@ -95,7 +95,7 @@ export function ExplorePage() {
       {/* Filter and Section Title with anchor ID */}
       <div id="tests-catalog" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 scroll-mt-20">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white">
+          <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white">
             Выберите исследование
           </h2>
           <span className="text-xs text-zinc-500">
@@ -126,44 +126,44 @@ export function ExplorePage() {
       </motion.div>
 
       {/* How It Works Instructions */}
-      <section className="p-5 sm:p-8 rounded-2xl bg-black border border-white/10">
-        <h3 className="text-lg sm:text-xl font-bold text-white mb-5 sm:mb-6">
+      <section className="p-5 sm:p-8 rounded-2xl bg-white dark:bg-black border border-zinc-200/80 dark:border-white/10 shadow-sm dark:shadow-none transition-colors">
+        <h3 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-white mb-5 sm:mb-6">
           Как пройти исследование и получить отчет
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-          <div className="flex flex-col gap-2 p-4 rounded-xl bg-black border border-white/5">
-            <div className="w-9 h-9 rounded-lg bg-black border border-white/10 flex items-center justify-center text-purple-400 mb-1">
+          <div className="flex flex-col gap-2 p-4 rounded-xl bg-zinc-50 dark:bg-black border border-zinc-200/60 dark:border-white/5 transition-colors">
+            <div className="w-9 h-9 rounded-lg bg-white dark:bg-black border border-zinc-200 dark:border-white/10 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-1">
               <Compass size={18} weight="bold" />
             </div>
-            <strong className="text-sm font-semibold text-white">
+            <strong className="text-sm font-semibold text-zinc-900 dark:text-white">
               Выберите тему и уделите время
             </strong>
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
               Выделите 10–15 минут в спокойной обстановке. Прогресс и черновики сохраняются автоматически.
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 p-4 rounded-xl bg-black border border-white/5">
-            <div className="w-9 h-9 rounded-lg bg-black border border-white/10 flex items-center justify-center text-purple-400 mb-1">
+          <div className="flex flex-col gap-2 p-4 rounded-xl bg-zinc-50 dark:bg-black border border-zinc-200/60 dark:border-white/5 transition-colors">
+            <div className="w-9 h-9 rounded-lg bg-white dark:bg-black border border-zinc-200 dark:border-white/10 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-1">
               <Sparkle size={18} weight="bold" />
             </div>
-            <strong className="text-sm font-semibold text-white">
+            <strong className="text-sm font-semibold text-zinc-900 dark:text-white">
               Отвечайте искренне
             </strong>
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
               Выбирайте естественный отклик на шкалах и по желанию дополняйте ответы голосом или текстом.
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 p-4 rounded-xl bg-black border border-white/5">
-            <div className="w-9 h-9 rounded-lg bg-black border border-white/10 flex items-center justify-center text-purple-400 mb-1">
+          <div className="flex flex-col gap-2 p-4 rounded-xl bg-zinc-50 dark:bg-black border border-zinc-200/60 dark:border-white/5 transition-colors">
+            <div className="w-9 h-9 rounded-lg bg-white dark:bg-black border border-zinc-200 dark:border-white/10 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-1">
               <Target size={18} weight="bold" />
             </div>
-            <strong className="text-sm font-semibold text-white">
+            <strong className="text-sm font-semibold text-zinc-900 dark:text-white">
               Получите досье в Telegram
             </strong>
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
               ИИ проанализирует ваши паттерны, сформирует персональный PDF-отчет и отправит его в ваш Telegram.
             </p>
           </div>
@@ -171,8 +171,8 @@ export function ExplorePage() {
       </section>
 
       {/* Local Data Privacy Note */}
-      <div className="text-xs text-zinc-500 flex items-center justify-center gap-2 text-center py-2 px-2">
-        <ShieldCheck size={16} className="text-purple-400 shrink-0" />
+      <div className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center gap-2 text-center py-2 px-2">
+        <ShieldCheck size={16} className="text-purple-600 dark:text-purple-400 shrink-0" />
         <span>Конфиденциальность: все ответы обрабатываются на защищенном сервере и направляются только в ваш личный чат.</span>
       </div>
     </div>

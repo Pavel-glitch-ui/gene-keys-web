@@ -200,11 +200,11 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
         <div className="flex flex-col gap-6">
           {/* Top Progress & Step counter */}
           <div>
-            <div className="flex items-center justify-between text-xs text-zinc-400 mb-2">
-              <span className="font-medium text-white">
+            <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-2">
+              <span className="font-medium text-zinc-900 dark:text-white">
                 {test.title}
               </span>
-              <span className="font-mono text-zinc-400">
+              <span className="font-mono text-zinc-500 dark:text-zinc-400">
                 {step + 1} / {test.questions.length}
               </span>
             </div>
@@ -229,13 +229,13 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
           </div>
 
           {/* Navigation Bottom Controls */}
-          <div className="flex items-center justify-between pt-4 border-t border-white/10">
+          <div className="flex items-center justify-between pt-4 border-t border-zinc-200/80 dark:border-white/10">
             <Button
               type="button"
               variant="ghost"
               size="md"
               onClick={handleBack}
-              className="gap-1.5 text-zinc-400 hover:text-white"
+              className="gap-1.5 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
             >
               <ArrowLeft size={16} />
               <span>Назад</span>

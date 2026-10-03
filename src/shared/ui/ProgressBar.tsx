@@ -11,7 +11,7 @@ export function ProgressBar({ current, total, className = '' }: ProgressBarProps
 
   return (
     <div
-      className={`w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-white/5 ${className}`}
+      className={`w-full h-1.5 bg-zinc-200 dark:bg-neutral-900 rounded-full overflow-hidden border border-zinc-200/80 dark:border-white/5 ${className}`}
       role="progressbar"
       aria-valuenow={current}
       aria-valuemin={0}

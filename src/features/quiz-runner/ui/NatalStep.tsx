@@ -62,18 +62,18 @@ export function NatalStep({ onSubmit }: NatalStepProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <div className="text-center mb-2">
-        <h3 className="text-xl sm:text-2xl font-bold text-white">
+        <h3 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white">
           Небо в момент вашего рождения
         </h3>
-        <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+        <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-1">
           Точные дата, время и место нужны для расчета хологенетического профиля.
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="flex items-center gap-1.5 text-xs font-semibold text-white mb-2">
-            <CalendarBlank size={15} className="text-purple-400" />
+          <label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900 dark:text-white mb-2">
+            <CalendarBlank size={15} className="text-purple-600 dark:text-purple-400" />
             <span>Дата рождения</span>
           </label>
           <input
@@ -81,13 +81,13 @@ export function NatalStep({ onSubmit }: NatalStepProps) {
             required
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-black text-white text-sm focus:outline-none focus:border-purple-500"
+            className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-white/15 bg-zinc-50 dark:bg-black text-zinc-900 dark:text-white text-sm focus:bg-white dark:focus:bg-black focus:outline-none focus:border-purple-500 transition-colors"
           />
         </div>
 
         <div>
-          <label className="flex items-center gap-1.5 text-xs font-semibold text-white mb-2">
-            <Clock size={15} className="text-purple-400" />
+          <label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900 dark:text-white mb-2">
+            <Clock size={15} className="text-purple-600 dark:text-purple-400" />
             <span>Местное время</span>
           </label>
           <input
@@ -95,30 +95,30 @@ export function NatalStep({ onSubmit }: NatalStepProps) {
             required
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-black text-white text-sm focus:outline-none focus:border-purple-500"
+            className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-white/15 bg-zinc-50 dark:bg-black text-zinc-900 dark:text-white text-sm focus:bg-white dark:focus:bg-black focus:outline-none focus:border-purple-500 transition-colors"
           />
         </div>
       </div>
 
       <div>
-        <label className="flex items-center gap-1.5 text-xs font-semibold text-white mb-2">
-          <MapPin size={15} className="text-purple-400" />
+        <label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900 dark:text-white mb-2">
+          <MapPin size={15} className="text-purple-600 dark:text-purple-400" />
           <span>Город рождения</span>
         </label>
         <select
           value={cityIndex}
           onChange={(e) => setCityIndex(Number(e.target.value))}
-          className="w-full px-4 py-3 rounded-xl border border-white/15 bg-black text-white text-sm focus:outline-none focus:border-purple-500 cursor-pointer"
+          className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-white/15 bg-zinc-50 dark:bg-black text-zinc-900 dark:text-white text-sm focus:bg-white dark:focus:bg-black focus:outline-none focus:border-purple-500 transition-colors cursor-pointer"
         >
           {CITIES_MOCK.map((c, i) => (
-            <option key={c.name} value={i} className="bg-black text-white">
+            <option key={c.name} value={i} className="bg-white text-zinc-900 dark:bg-black dark:text-white">
               {c.name} ({c.timezone})
             </option>
           ))}
         </select>
       </div>
 
-      <div className="p-3.5 rounded-xl bg-black border border-white/10 text-[11px] text-zinc-500 leading-relaxed">
+      <div className="p-3.5 rounded-xl bg-zinc-50 dark:bg-black border border-zinc-200/80 dark:border-white/10 text-[11px] text-zinc-600 dark:text-zinc-500 leading-relaxed transition-colors">
         Данные используются исключительно для вычисления градусов генных ключей и планетарных активаций.
       </div>
 

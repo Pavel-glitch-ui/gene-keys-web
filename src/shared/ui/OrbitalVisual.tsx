@@ -113,48 +113,48 @@ export function OrbitalVisual() {
       aria-hidden="true"
     >
       {/* Outer static hairline orbit */}
-      <div className="absolute inset-0 rounded-full border border-white/10 pointer-events-none" />
+      <div className="absolute inset-0 rounded-full border border-zinc-200 dark:border-white/10 pointer-events-none transition-colors" />
 
       {/* Middle static dashed hairline orbit */}
-      <div className="absolute inset-6 rounded-full border border-dashed border-white/15 pointer-events-none" />
+      <div className="absolute inset-6 rounded-full border border-dashed border-zinc-300 dark:border-white/15 pointer-events-none transition-colors" />
 
       {/* Inner static hairline orbit */}
-      <div className="absolute inset-12 rounded-full border border-white/10 pointer-events-none" />
+      <div className="absolute inset-12 rounded-full border border-zinc-200 dark:border-white/10 pointer-events-none transition-colors" />
 
-      {/* Node 1: "истории" (stays strictly horizontal, 0 deg rotation) */}
+      {/* Node 1: "истории" */}
       <div
         ref={node1Ref}
-        className="absolute top-1/2 left-1/2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-black border border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-white shadow-none pointer-events-auto whitespace-nowrap will-change-transform"
+        className="absolute top-1/2 left-1/2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none pointer-events-auto whitespace-nowrap will-change-transform transition-colors"
         style={{ transform: 'translate(-50%, -50%)' }}
       >
-        <Sparkle size={12} weight="fill" className="text-purple-400 shrink-0" />
+        <Sparkle size={12} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0" />
         <span>истории</span>
       </div>
 
-      {/* Node 2: "выбор" (stays strictly horizontal, 0 deg rotation) */}
+      {/* Node 2: "выбор" */}
       <div
         ref={node2Ref}
-        className="absolute top-1/2 left-1/2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-black border border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-white shadow-none pointer-events-auto whitespace-nowrap will-change-transform"
+        className="absolute top-1/2 left-1/2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none pointer-events-auto whitespace-nowrap will-change-transform transition-colors"
         style={{ transform: 'translate(-50%, -50%)' }}
       >
-        <Compass size={12} weight="bold" className="text-purple-400 shrink-0" />
+        <Compass size={12} weight="bold" className="text-purple-600 dark:text-purple-400 shrink-0" />
         <span>выбор</span>
       </div>
 
-      {/* Node 3: "желания" (stays strictly horizontal, 0 deg rotation) */}
+      {/* Node 3: "желания" */}
       <div
         ref={node3Ref}
-        className="absolute top-1/2 left-1/2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-black border border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-white shadow-none pointer-events-auto whitespace-nowrap will-change-transform"
+        className="absolute top-1/2 left-1/2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none pointer-events-auto whitespace-nowrap will-change-transform transition-colors"
         style={{ transform: 'translate(-50%, -50%)' }}
       >
-        <Heart size={12} weight="fill" className="text-purple-400 shrink-0" />
+        <Heart size={12} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0" />
         <span>желания</span>
       </div>
 
-      {/* Central Core: pure black disc with subtle purple accent point (original style) */}
-      <div className="relative z-10 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-black text-white flex flex-col items-center justify-center border border-white/20 shadow-none">
+      {/* Central Core */}
+      <div className="relative z-10 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white dark:bg-black text-zinc-900 dark:text-white flex flex-col items-center justify-center border border-zinc-200 dark:border-white/20 shadow-md dark:shadow-none transition-colors">
         <div className="text-[9px] sm:text-[10px] tracking-widest uppercase text-zinc-400 font-medium">центр</div>
-        <div className="text-xs sm:text-sm font-semibold tracking-wide text-white">ваше я</div>
+        <div className="text-xs sm:text-sm font-semibold tracking-wide text-zinc-900 dark:text-white">ваше я</div>
         <div className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-1" />
       </div>
     </div>

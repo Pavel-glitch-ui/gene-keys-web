@@ -29,13 +29,13 @@ export function Button({
 
   const variantStyles = {
     primary:
-      'bg-purple-600 text-white hover:bg-purple-500 active:scale-[0.99] border border-purple-500/50 shadow-none font-medium',
+      'bg-purple-600 text-white hover:bg-purple-500 active:scale-[0.99] border border-purple-500/50 shadow-xs dark:shadow-none font-medium',
     secondary:
-      'bg-black text-white hover:bg-neutral-900 active:scale-[0.99] border border-white/15 shadow-none',
+      'bg-zinc-100 text-zinc-900 hover:bg-zinc-200 border-zinc-200/80 dark:bg-black dark:text-white dark:hover:bg-neutral-900 dark:border-white/15 shadow-xs dark:shadow-none',
     ghost:
-      'bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 active:scale-[0.99]',
+      'bg-transparent text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 active:scale-[0.99]',
     outline:
-      'bg-transparent text-white hover:bg-white/5 active:scale-[0.99] border border-white/20',
+      'bg-transparent text-zinc-900 hover:bg-zinc-100 border border-zinc-300 dark:text-white dark:hover:bg-white/5 dark:border-white/20 active:scale-[0.99]',
     danger:
       'bg-rose-600 text-white hover:bg-rose-500 active:scale-[0.99]',
   }[variant];

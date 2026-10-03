@@ -85,13 +85,13 @@ export function FeedbackModal({
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-6 pt-2">
         {/* Intro notice */}
-        <div className="p-3.5 rounded-xl bg-black border border-purple-500/30 text-xs text-zinc-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-purple-50 dark:bg-black border border-purple-200 dark:border-purple-500/30 text-xs text-purple-900 dark:text-zinc-300 leading-relaxed transition-colors">
           Сейчас сервис находится в режиме активного тестирования. Чтобы получить персональное досье в Telegram бесплатно, поделитесь вашими впечатлениями от прохождения теста.
         </div>
 
         {/* 1. Rating */}
         <div>
-          <label className="block text-xs font-semibold text-white mb-2">
+          <label className="block text-xs font-semibold text-zinc-900 dark:text-white mb-2">
             1. Ваша общая оценка исследования:
           </label>
           <div className="flex items-center gap-2">
@@ -108,12 +108,12 @@ export function FeedbackModal({
                   <Star
                     size={28}
                     weight={active ? 'fill' : 'regular'}
-                    className={active ? 'text-amber-400' : 'text-zinc-600'}
+                    className={active ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'}
                   />
                 </button>
               );
             })}
-            <span className="text-xs text-zinc-400 font-medium ml-2">
+            <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium ml-2">
               {RATING_LABELS[rating]}
             </span>
           </div>
@@ -121,7 +121,7 @@ export function FeedbackModal({
 
         {/* 2. Highlight tags */}
         <div>
-          <label className="block text-xs font-semibold text-white mb-2">
+          <label className="block text-xs font-semibold text-zinc-900 dark:text-white mb-2">
             2. Что обратило на себя внимание? (выберите варианты)
           </label>
           <div className="flex flex-wrap gap-2">
@@ -134,8 +134,8 @@ export function FeedbackModal({
                   onClick={() => toggleTag(tag)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer border ${
                     isSelected
-                      ? 'bg-purple-950 text-purple-300 border-purple-500'
-                      : 'bg-black text-zinc-400 border-white/10 hover:border-white/20 hover:text-white'
+                      ? 'bg-purple-50 text-purple-900 border-purple-400 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-500'
+                      : 'bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:text-zinc-900 dark:bg-black dark:text-zinc-400 dark:border-white/10 dark:hover:border-white/20 dark:hover:text-white'
                   }`}
                 >
                   {tag}
@@ -148,12 +148,12 @@ export function FeedbackModal({
         {/* 3. Detailed comment (MANDATORY) */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label htmlFor="feedback-comment" className="text-xs font-semibold text-white">
-              3. Ваш честный отзыв и замечания: <span className="text-purple-400">*</span>
+            <label htmlFor="feedback-comment" className="text-xs font-semibold text-zinc-900 dark:text-white">
+              3. Ваш честный отзыв и замечания: <span className="text-purple-600 dark:text-purple-400">*</span>
             </label>
             <span
               className={`text-[11px] font-mono ${
-                isValid ? 'text-zinc-400' : 'text-amber-400 font-semibold'
+                isValid ? 'text-zinc-500 dark:text-zinc-400' : 'text-amber-600 dark:text-amber-400 font-semibold'
               }`}
             >
               {trimmedComment.length} / {MIN_COMMENT_LENGTH} мин.
@@ -168,10 +168,10 @@ export function FeedbackModal({
               if (error) setError(null);
             }}
             placeholder="Напишите, что показалось наиболее точным, какие вопросы вызвали затруднения, или что стоит доработать..."
-            className="w-full p-3.5 rounded-xl bg-black border border-white/15 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-purple-500 transition-colors resize-none"
+            className="w-full p-3.5 rounded-xl bg-zinc-50 dark:bg-black border border-zinc-200 dark:border-white/15 text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:bg-white dark:focus:bg-black focus:outline-none focus:border-purple-500 transition-colors resize-none"
           />
           {error && (
-            <div className="flex items-center gap-1.5 text-xs text-rose-400 mt-1.5">
+            <div className="flex items-center gap-1.5 text-xs text-rose-500 dark:text-rose-400 mt-1.5">
               <WarningCircle size={14} weight="bold" />
               <span>{error}</span>
             </div>
@@ -179,12 +179,12 @@ export function FeedbackModal({
         </div>
 
         {/* 4. CustDev ready checkbox */}
-        <label className="flex items-start gap-3 p-3 rounded-xl bg-black border border-white/10 cursor-pointer text-xs text-zinc-300 hover:border-white/20 transition-colors select-none">
+        <label className="flex items-start gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-black border border-zinc-200/80 dark:border-white/10 cursor-pointer text-xs text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-white/20 transition-colors select-none">
           <input
             type="checkbox"
             checked={custdevReady}
             onChange={(e) => setCustdevReady(e.target.checked)}
-            className="mt-0.5 rounded border-white/20 bg-black text-purple-600 focus:ring-purple-500 cursor-pointer"
+            className="mt-0.5 rounded border-zinc-300 dark:border-white/20 bg-white dark:bg-black text-purple-600 focus:ring-purple-500 cursor-pointer"
           />
           <span>
             Я готов(а) ответить на пару вопросов команды для улучшения сервиса (в Telegram)

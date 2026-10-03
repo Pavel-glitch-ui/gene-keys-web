@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
 import { TelegramProvider } from '@/src/shared/lib/telegram';
-import { AppStateProvider } from '@/src/_app/providers/AppStateProvider';
+import { AppStateProvider, ThemeProvider } from '@/src/_app/providers';
 import { AppShell } from '@/src/_app/ui/AppShell';
 
 const inter = Inter({
@@ -37,13 +37,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru" className={`${inter.variable} ${cormorant.variable} h-full antialiased`}>
+    <html
+      lang="ru"
+      suppressHydrationWarning
+      className={`${inter.variable} ${cormorant.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col font-sans">
-        <TelegramProvider>
-          <AppStateProvider>
-            <AppShell>{children}</AppShell>
-          </AppStateProvider>
-        </TelegramProvider>
+        <ThemeProvider>
+          <TelegramProvider>
+            <AppStateProvider>
+              <AppShell>{children}</AppShell>
+            </AppStateProvider>
+          </TelegramProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -4,19 +4,19 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAppState } from '@/src/_app/providers/AppStateProvider';
 import { useTelegramContext } from '@/src/shared/lib/telegram';
-import { Button } from '@/shared/ui/Button';
-import { Badge } from '@/shared/ui/Badge';
+import { Button } from '@/src/shared/ui/Button';
+import { Badge } from '@/src/shared/ui/Badge';
 import { FeedbackModal, type FeedbackData } from '@/src/features/feedback';
 import {
+  FilePdf,
   Sparkle,
   CheckCircle,
   PaperPlaneTilt,
   LockKey,
-  ShieldCheck,
-  FilePdf,
   CalendarCheck,
   Lightbulb,
   ArrowRight,
+  ShieldCheck,
   Spinner,
 } from '@phosphor-icons/react';
 
@@ -36,12 +36,12 @@ export function CheckoutPage() {
 
   if (!activeReport) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[450px] p-8 rounded-2xl bg-black border border-white/10 text-center">
-        <Sparkle size={44} weight="regular" className="text-purple-400 mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">
+      <div className="flex flex-col items-center justify-center min-h-[450px] p-8 rounded-2xl bg-white dark:bg-black border border-zinc-200/80 dark:border-white/10 text-center shadow-sm dark:shadow-none transition-colors">
+        <Sparkle size={44} weight="regular" className="text-purple-600 dark:text-purple-400 mb-4" />
+        <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
           Выберите тест для прохождения
         </h2>
-        <p className="text-sm text-zinc-400 max-w-md mb-6">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-md mb-6">
           Чтобы сформировать разбор и получить PDF в Telegram, пройдите одно из доступных исследований.
         </p>
         <Link href="/">
@@ -110,18 +110,22 @@ export function CheckoutPage() {
       return;
     }
 
-    // If user hasn't submitted feedback yet, open feedback modal first
+    // If feedback is not yet submitted, open mandatory feedback modal
     if (!feedback) {
       setIsFeedbackOpen(true);
       return;
     }
 
-    executeDelivery();
+    // If feedback is already submitted, deliver directly
+    executeDelivery(feedback);
   };
 
   const handleFeedbackSubmit = async (feedbackData: FeedbackData) => {
     setIsSubmittingFeedback(true);
+    setFeedback(feedbackData);
+
     try {
+      // 1. Submit feedback to API
       await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -129,38 +133,43 @@ export function CheckoutPage() {
           chatId: effectiveChatId,
           testId: activeReport.test.id,
           testTitle: activeReport.test.title,
-          ...feedbackData,
+          rating: feedbackData.rating,
+          tags: feedbackData.tags,
+          comment: feedbackData.comment,
+          custdevReady: feedbackData.custdevReady,
         }),
-      });
+      }).catch((e) => console.error('[Feedback Send Error]:', e));
 
-      setFeedback(feedbackData);
+      // 2. Close modal
       setIsFeedbackOpen(false);
-      // Automatically trigger delivery right after feedback submission
+
+      // 3. Immediately trigger PDF generation & delivery
       await executeDelivery(feedbackData);
-    } catch (err) {
-      console.error('[Feedback submit error]:', err);
+    } catch (err: unknown) {
+      console.error('[Feedback Delivery Error]:', err);
+      setIsFeedbackOpen(false);
     } finally {
       setIsSubmittingFeedback(false);
     }
   };
 
-  // SUCCESS STATE AFTER DELIVERY
+  // SUCCESS DELIVERED STATE
   if (isDelivered) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 sm:p-12 rounded-2xl bg-black border border-white/10 text-center max-w-2xl mx-auto my-6 shadow-2xl">
-        <div className="w-16 h-16 rounded-full bg-black border border-emerald-500/40 text-emerald-400 flex items-center justify-center mb-5">
+      <div className="flex flex-col items-center justify-center p-8 sm:p-12 rounded-2xl bg-white dark:bg-black border border-zinc-200/80 dark:border-white/10 text-center max-w-2xl mx-auto my-6 shadow-2xl transition-colors">
+        <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-black border border-emerald-300 dark:border-emerald-500/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-5">
           <CheckCircle size={36} weight="fill" />
         </div>
 
-        <span className="text-xs uppercase font-mono tracking-widest text-purple-400 font-semibold mb-2">
+        <span className="text-xs uppercase font-mono tracking-widest text-purple-600 dark:text-purple-400 font-semibold mb-2">
           Доставка успешна
         </span>
 
-        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
+        <h1 className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white mb-3">
           Ваш разбор отправлен в Telegram!
         </h1>
 
-        <p className="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-md mb-6">
+        <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md mb-6">
           Мы скомпилировали ваш персональный PDF-журнал с AI-анализом и отправили его в диалог (чат <strong>#{effectiveChatId}</strong>). Откройте Telegram — документ уже готов.
         </p>
 
@@ -181,84 +190,84 @@ export function CheckoutPage() {
     <div className="flex flex-col gap-8 max-w-3xl mx-auto my-4">
       {/* Top Banner */}
       <div className="text-center">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-black text-emerald-400 border border-emerald-500/30 mb-3">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-black text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 mb-3 transition-colors">
           <CheckCircle size={14} weight="fill" />
           <span>Исследование завершено • ИИ-анализ готов к отправке</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-bold text-white">
+        <h1 className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white">
           Ваш персональный разбор готов
         </h1>
-        <p className="text-zinc-400 text-sm mt-2">
+        <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-2">
           {activeReport.profile?.name ? `${activeReport.profile.name}, ваш` : 'Ваш'} индивидуальный отчет по исследованию «<strong>{activeReport.test.title}</strong>» оформлен в многостраничное PDF-досье.
         </p>
       </div>
 
-      {/* Sealed Journal Teaser Preview Card in True Black */}
-      <div className="relative overflow-hidden p-6 sm:p-8 rounded-2xl bg-black text-white border border-white/10 flex flex-col gap-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
+      {/* Sealed Journal Teaser Preview Card in Alabaster / True Black */}
+      <div className="relative overflow-hidden p-6 sm:p-8 rounded-2xl bg-white dark:bg-black text-zinc-900 dark:text-white border border-zinc-200/80 dark:border-white/10 shadow-sm dark:shadow-none flex flex-col gap-6 transition-colors">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-zinc-200/80 dark:border-white/10">
           <div className="flex items-center gap-2">
-            <FilePdf size={22} weight="regular" className="text-purple-400" />
-            <span className="font-bold text-lg text-white">
+            <FilePdf size={22} weight="regular" className="text-purple-600 dark:text-purple-400" />
+            <span className="font-bold text-lg text-zinc-900 dark:text-white">
               Личное досье: {activeReport.test.title}
             </span>
           </div>
-          <span className="text-xs font-mono px-3 py-1 rounded-full bg-black text-purple-300 border border-purple-500/40">
+          <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-50 dark:bg-black text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/40">
             Объем: ~16 страниц
           </span>
         </div>
 
         {/* Teaser Insights List */}
         <div className="flex flex-col gap-4">
-          <div className="flex items-start gap-3 text-sm text-zinc-300">
-            <Sparkle size={18} weight="fill" className="text-purple-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 text-sm text-zinc-700 dark:text-zinc-300">
+            <Sparkle size={18} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
             <div>
-              <strong className="text-white block">Ведущие проявления и опоры:</strong>
+              <strong className="text-zinc-900 dark:text-white block">Ведущие проявления и опоры:</strong>
               В ваших ответах ярче всего проявились грани «{topDomains.map((d) => d.label).join('», «')}». В отчете разобран их скрытый потенциал и теневые ловушки.
             </div>
           </div>
 
-          <div className="flex items-start gap-3 text-sm text-zinc-300">
-            <Lightbulb size={18} weight="fill" className="text-purple-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 text-sm text-zinc-700 dark:text-zinc-300">
+            <Lightbulb size={18} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
             <div>
-              <strong className="text-white block">Анализ внутренних противоречий:</strong>
+              <strong className="text-zinc-900 dark:text-white block">Анализ внутренних противоречий:</strong>
               Выявлены расхождения в ответах внутри шкал, объясняющие, почему в одних ситуациях вам легко действовать, а в других возникает сопротивление.
             </div>
           </div>
 
-          <div className="flex items-start gap-3 text-sm text-zinc-300">
-            <CalendarCheck size={18} weight="regular" className="text-purple-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 text-sm text-zinc-700 dark:text-zinc-300">
+            <CalendarCheck size={18} weight="regular" className="text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
             <div>
-              <strong className="text-white block">Персональная программа интеграции на 4 недели:</strong>
+              <strong className="text-zinc-900 dark:text-white block">Персональная программа интеграции на 4 недели:</strong>
               Пошаговые еженедельные фокусы: наблюдение, мягкий эксперимент, укрепление опоры и переход из состояния Тени в Дар.
             </div>
           </div>
         </div>
 
         {/* Document Status Banner */}
-        <div className="p-4 rounded-xl bg-black border border-white/10 flex items-center justify-between text-xs text-zinc-400">
+        <div className="p-4 rounded-xl bg-zinc-50 dark:bg-black border border-zinc-200/80 dark:border-white/10 flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400 transition-colors">
           <div className="flex items-center gap-2">
-            <LockKey size={16} weight="fill" className="text-purple-400" />
+            <LockKey size={16} weight="fill" className="text-purple-600 dark:text-purple-400" />
             <span>Документ защищен и готов к прямой отправке в Telegram</span>
           </div>
-          <span className="font-mono text-[11px] text-purple-300">ФОРМАТ PDF</span>
+          <span className="font-mono text-[11px] text-purple-600 dark:text-purple-300">ФОРМАТ PDF</span>
         </div>
       </div>
 
       {/* Delivery / Action Card */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-black border border-white/10 flex flex-col gap-6">
+      <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-black border border-zinc-200/80 dark:border-white/10 shadow-sm dark:shadow-none flex flex-col gap-6 transition-colors">
         <div>
           <div className="flex items-baseline justify-between mb-2">
-            <h3 className="text-xl font-bold text-white">
+            <h3 className="text-xl font-bold text-zinc-900 dark:text-white">
               Получение отчета в Telegram
             </h3>
             <div className="flex items-baseline gap-2">
-              <span className="text-xs text-zinc-600 line-through">1 490 ₽</span>
-              <span className="text-sm font-bold text-emerald-400">
+              <span className="text-xs text-zinc-400 line-through">1 490 ₽</span>
+              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
                 0 ₽ (Бесплатно за отзыв)
               </span>
             </div>
           </div>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
             Поделитесь коротким отзывом о тестировании, и бот мгновенно отправит готовый PDF-документ вам в чат.
           </p>
         </div>
@@ -266,13 +275,13 @@ export function CheckoutPage() {
         {/* Telegram Chat Input (if not present in URL) */}
         <form onSubmit={handleActionClick} className="flex flex-col gap-4">
           <div>
-            <label className="block text-xs font-semibold text-white mb-2">
+            <label className="block text-xs font-semibold text-zinc-900 dark:text-white mb-2">
               Куда отправить разбор:
             </label>
             {chatId ? (
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-black border border-purple-500/40 text-xs">
-                <span className="text-zinc-200 font-medium">
-                  Ваш Telegram Chat ID: <strong className="text-white">{chatId}</strong>
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-purple-50 dark:bg-black border border-purple-200 dark:border-purple-500/40 text-xs transition-colors">
+                <span className="text-zinc-800 dark:text-zinc-200 font-medium">
+                  Ваш Telegram Chat ID: <strong className="text-zinc-900 dark:text-white">{chatId}</strong>
                 </span>
                 <Badge variant="purple">Привязан из ссылки</Badge>
               </div>
@@ -284,7 +293,7 @@ export function CheckoutPage() {
                   value={inputChatId}
                   onChange={(e) => setInputChatId(e.target.value)}
                   placeholder="Введите ваш Telegram Chat ID (например, 123456789)"
-                  className="w-full px-4 py-3 rounded-xl border border-white/15 bg-black text-white text-sm focus:outline-none focus:border-purple-500 placeholder:text-zinc-600"
+                  className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-white/15 bg-zinc-50 dark:bg-black text-zinc-900 dark:text-white text-sm focus:bg-white dark:focus:bg-black focus:outline-none focus:border-purple-500 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition-colors"
                 />
                 <span className="text-[11px] text-zinc-500">
                   ID чата передается автоматически при переходе из бота, либо укажите его вручную.
@@ -294,7 +303,7 @@ export function CheckoutPage() {
           </div>
 
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-black border border-rose-500/40 text-xs text-rose-300">
+            <div className="p-3 rounded-xl bg-rose-50 dark:bg-black border border-rose-200 dark:border-rose-500/40 text-xs text-rose-800 dark:text-rose-300 transition-colors">
               {errorMessage}
             </div>
           )}
@@ -325,7 +334,7 @@ export function CheckoutPage() {
           </Button>
 
           <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-500 text-center">
-            <ShieldCheck size={14} className="text-purple-400" />
+            <ShieldCheck size={14} className="text-purple-600 dark:text-purple-400" />
             <span>Конфиденциально • Документ направляется только в указанный чат Telegram</span>
           </div>
         </form>
