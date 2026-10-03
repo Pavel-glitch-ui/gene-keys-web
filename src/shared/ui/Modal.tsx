@@ -73,7 +73,7 @@ export function Modal({
             {/* Mobile-friendly touch target close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-neutral-900 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer"
+              className="absolute top-[-2] right-2 sm:top-[-2] sm:right-2 p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-neutral-900 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer"
               aria-label="Закрыть"
             >
               <X size={18} weight="bold" />
