@@ -29,25 +29,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#fbf9fc] dark:bg-[#0e0914] text-stone-900 dark:text-stone-100 font-sans antialiased selection:bg-purple-200 dark:selection:bg-purple-900">
+    <div className="min-h-screen flex bg-black text-white font-sans antialiased selection:bg-purple-900 selection:text-white">
       {/* Desktop Sidebar */}
       <div className="hidden md:flex">
         <Sidebar />
       </div>
 
       {/* Main Content Column */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 bg-black">
         <Header />
 
         <main className="flex-1 p-4 sm:p-8 max-w-6xl w-full mx-auto">
           {children}
         </main>
 
-        <footer className="py-6 px-8 border-t border-purple-100 dark:border-purple-900/30 text-xs text-stone-500 dark:text-stone-400 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span>тень — быть ближе к себе</span>
+        <footer className="py-6 px-8 border-t border-white/10 text-xs text-zinc-500 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <span>тень — пространство глубинной диагностики</span>
           <span className="flex items-center gap-1.5">
             Без правильных и неправильных ответов
-            <Sparkle size={13} weight="fill" className="text-amber-500" />
+            <Sparkle size={13} weight="fill" className="text-purple-400" />
           </span>
         </footer>
       </div>

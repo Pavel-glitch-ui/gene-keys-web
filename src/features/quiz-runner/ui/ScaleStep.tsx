@@ -26,10 +26,10 @@ export function ScaleStep({ question, selectedAnswer, onSelect }: ScaleStepProps
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 dark:text-white leading-snug mb-2">
+        <h3 className="text-xl sm:text-2xl font-bold text-white leading-snug mb-2">
           {question.text}
         </h3>
-        <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
+        <p className="text-xs sm:text-sm text-zinc-400">
           Насколько это утверждение похоже на вас в обычной жизни?
         </p>
       </div>
@@ -44,31 +44,36 @@ export function ScaleStep({ question, selectedAnswer, onSelect }: ScaleStepProps
               role="radio"
               aria-checked={isSelected}
               onClick={() => onSelect(idx)}
-              className={`group flex items-center justify-between p-3.5 sm:p-4 rounded-2xl text-left text-sm font-medium transition-all duration-200 cursor-pointer select-none border ${
+              className={`group flex items-center justify-between p-3.5 sm:p-4 rounded-xl text-left text-sm font-medium transition-all duration-150 cursor-pointer select-none border ${
                 isSelected
-                  ? 'bg-purple-900 text-white border-purple-900 shadow-md shadow-purple-950/10 dark:bg-purple-800 dark:border-purple-700'
-                  : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 border-purple-200/60 dark:border-purple-800/40 hover:bg-purple-50/60 dark:hover:bg-purple-950/30 hover:border-purple-300'
+                  ? 'bg-black text-white border-purple-500 shadow-none'
+                  : 'bg-black text-zinc-300 border-white/10 hover:border-white/20 hover:text-white'
               }`}
             >
               <div className="flex items-center gap-3">
                 <span
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-colors ${
                     isSelected
-                      ? 'bg-white text-purple-900 dark:bg-stone-900 dark:text-white'
-                      : 'bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 group-hover:bg-purple-200'
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-neutral-900 text-zinc-400 group-hover:text-white'
                   }`}
                 >
-                  {isSelected ? <Check size={14} weight="bold" /> : idx + 1}
+                  {idx + 1}
                 </span>
                 <span>{label}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-mono text-zinc-600 group-hover:text-zinc-400 transition-colors">
+                  [{idx + 1}]
+                </span>
+                {isSelected && (
+                  <Check size={16} weight="bold" className="text-purple-400" />
+                )}
               </div>
             </button>
           );
         })}
-      </div>
-
-      <div className="text-[11px] text-stone-400 flex items-center justify-between">
-        <span>Подсказка: можно нажимать цифры 1–5 на клавиатуре</span>
       </div>
     </div>
   );

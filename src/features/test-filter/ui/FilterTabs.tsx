@@ -19,10 +19,10 @@ export function FilterTabs({ filters, activeFilter, onSelect }: FilterTabsProps)
             role="tab"
             aria-selected={isActive}
             onClick={() => onSelect(filter)}
-            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer select-none ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 cursor-pointer select-none ${
               isActive
-                ? 'bg-purple-950 text-white shadow-sm dark:bg-purple-800 dark:text-purple-50'
-                : 'bg-white/80 dark:bg-stone-900/80 text-stone-600 dark:text-stone-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-purple-200/50 dark:border-purple-800/40'
+                ? 'bg-purple-600 text-white border border-purple-500 shadow-none'
+                : 'bg-black text-zinc-400 hover:text-white hover:bg-neutral-950 border border-white/10'
             }`}
           >
             {filter}

@@ -11,14 +11,14 @@ export function ProgressBar({ current, total, className = '' }: ProgressBarProps
 
   return (
     <div
-      className={`w-full h-1.5 bg-purple-100 dark:bg-purple-950/60 rounded-full overflow-hidden ${className}`}
+      className={`w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-white/5 ${className}`}
       role="progressbar"
       aria-valuenow={current}
       aria-valuemin={0}
       aria-valuemax={total}
     >
       <div
-        className="h-full bg-gradient-to-r from-purple-500 to-indigo-600 transition-all duration-300 ease-out rounded-full"
+        className="h-full bg-purple-500 transition-all duration-300 ease-out rounded-full"
         style={{ width: `${percentage}%` }}
       />
     </div>

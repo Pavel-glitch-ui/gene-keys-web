@@ -29,15 +29,15 @@ export function Button({
 
   const variantStyles = {
     primary:
-      'bg-purple-950 text-purple-100 hover:bg-purple-900 active:scale-[0.99] shadow-sm hover:shadow dark:bg-purple-900 dark:text-purple-50 dark:hover:bg-purple-800 border border-purple-800/40',
+      'bg-purple-600 text-white hover:bg-purple-500 active:scale-[0.99] border border-purple-500/50 shadow-none font-medium',
     secondary:
-      'bg-purple-100 text-purple-900 hover:bg-purple-200/80 active:scale-[0.99] dark:bg-purple-950/60 dark:text-purple-200 dark:hover:bg-purple-900/60 border border-purple-200/60 dark:border-purple-800/50',
+      'bg-black text-white hover:bg-neutral-900 active:scale-[0.99] border border-white/15 shadow-none',
     ghost:
-      'bg-transparent text-purple-900 hover:bg-purple-100/60 active:scale-[0.99] dark:text-purple-200 dark:hover:bg-purple-950/50',
+      'bg-transparent text-zinc-400 hover:text-white hover:bg-white/5 active:scale-[0.99]',
     outline:
-      'bg-transparent text-purple-900 hover:bg-purple-100/50 active:scale-[0.99] border border-purple-300/80 dark:text-purple-200 dark:border-purple-800/60 dark:hover:bg-purple-950/40',
+      'bg-transparent text-white hover:bg-white/5 active:scale-[0.99] border border-white/20',
     danger:
-      'bg-rose-600 text-white hover:bg-rose-700 active:scale-[0.99] dark:bg-rose-700 dark:hover:bg-rose-600',
+      'bg-rose-600 text-white hover:bg-rose-500 active:scale-[0.99]',
   }[variant];
 
   return (
