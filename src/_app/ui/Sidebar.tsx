@@ -51,11 +51,10 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center justify-between px-3.5 py-3 rounded-2xl text-sm font-medium transition-all ${
-                item.active
+              className={`flex items-center justify-between px-3.5 py-3 rounded-2xl text-sm font-medium transition-all ${item.active
                   ? 'bg-purple-900/60 text-purple-100 border border-purple-700/50 shadow-sm'
                   : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/80'
-              }`}
+                }`}
             >
               <div className="flex items-center gap-3">
                 <span className={item.active ? 'text-purple-300' : 'text-stone-400'}>
