@@ -12,5 +12,5 @@ build:
 run:
   # В runtime-контейнере Amvera доступен стандартный npm (глобальный pnpm отсутствует в runtime).
   # `npm run bot:dev` выполняет `tsx scripts/dev-bot.ts` в режиме Long Polling.
-  command: npm run bot:dev
+  command: pnpm run bot:dev
 
