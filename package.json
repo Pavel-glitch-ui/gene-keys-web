@@ -20,7 +20,9 @@
     "openai": "^7.27.0",
     "pdf-lib": "^1.17.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.23.15"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
