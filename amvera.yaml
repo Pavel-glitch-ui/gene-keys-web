@@ -1,0 +1,18 @@
+meta:
+  environment: node
+  toolchain:
+    name: npm
+    version: 20
+
+build:
+  # 1. Устанавливаем pnpm глобально в контейнере сборщика
+  # 2. Устанавливаем ВСЕ зависимости (включая devDependencies, т.к. `tsx` нужен для скрипта bot:dev)
+  # Обратите внимание: `pnpm build` (сборку Next.js) намеренно пропускаем, чтобы сэкономить ресурсы и время сборки
+  additionalCommands: npm install -g pnpm && pnpm install
+
+run:
+  # Запуск только Telegram-бота в режиме Long Polling
+  command: pnpm run bot:dev
+  # containerPort не указывается, так как бот работает через Long Polling (исходящие запросы к Telegram API)
+  # и не открывает входящий HTTP-порт.
+
