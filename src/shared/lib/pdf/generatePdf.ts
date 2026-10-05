@@ -36,17 +36,16 @@ export async function generateAssessmentPdf(params: GeneratePdfParams): Promise<
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
 
-  // Load Cyrillic Arial font
   const fontsDir = path.resolve(process.cwd(), 'src/shared/assets/fonts');
   const regularPath = path.join(fontsDir, 'arial.ttf');
   const boldPath = path.join(fontsDir, 'arialbd.ttf');
 
-  const regularBytes = fs.existsSync(regularPath)
-    ? fs.readFileSync(regularPath)
-    : fs.readFileSync('C:/Windows/Fonts/arial.ttf');
-  const boldBytes = fs.existsSync(boldPath)
-    ? fs.readFileSync(boldPath)
-    : fs.readFileSync('C:/Windows/Fonts/arialbd.ttf');
+  if (!fs.existsSync(regularPath) || !fs.existsSync(boldPath)) {
+    throw new Error('Required Cyrillic fonts (arial.ttf, arialbd.ttf) not found in src/shared/assets/fonts');
+  }
+
+  const regularBytes = fs.readFileSync(regularPath);
+  const boldBytes = fs.readFileSync(boldPath);
 
   const fontBody = await doc.embedFont(regularBytes);
   const fontBold = await doc.embedFont(boldBytes);

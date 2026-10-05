@@ -47,26 +47,26 @@ export function ExplorePage() {
       {/* Intro Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[var(--foreground)] leading-tight">
             А кто ты на самом деле?
           </h1>
-          <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base mt-2 max-w-xl leading-relaxed">
+          <p className="text-[var(--text-secondary)] text-sm sm:text-base mt-2 max-w-xl leading-relaxed">
             Откройте свои сильные стороны, теневые триггеры и потенциал роста через четыре авторских исследования.
           </p>
         </div>
-        <span className="text-xs text-zinc-400 dark:text-zinc-500 hidden sm:block">
+        <span className="text-xs text-[var(--text-muted)] hidden sm:block">
           Глубинная диагностика личности
         </span>
       </div>
 
-      {/* Feature Showcase Card in Alabaster / True Black */}
-      <div className="relative overflow-hidden p-5 sm:p-8 md:p-10 rounded-2xl bg-white dark:bg-black text-zinc-900 dark:text-white border border-zinc-200/80 dark:border-white/10 shadow-sm dark:shadow-none flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 transition-colors">
+      {/* Feature Showcase Card */}
+      <div className="relative overflow-hidden p-5 sm:p-8 md:p-10 rounded-2xl bg-[var(--surface-1)] text-[var(--foreground)] border border-[var(--border)] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 transition-colors">
         <div className="flex-1 flex flex-col gap-4 z-10 w-full">
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-bold leading-tight text-zinc-900 dark:text-white">
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-bold leading-tight text-[var(--foreground)]">
             Иногда ответ — это выбор.<br />
             А иногда — целая история.
           </h2>
-          <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm md:text-base leading-relaxed max-w-lg">
+          <p className="text-[var(--text-secondary)] text-xs sm:text-sm md:text-base leading-relaxed max-w-lg">
             Отвечайте на шкалы или дополняйте ответы своими словами. Получите персональный хологенетический портрет и пошаговый план трансформации в Telegram.
           </p>
 
@@ -80,8 +80,8 @@ export function ExplorePage() {
               <span>Выбрать исследование</span>
               <ArrowDown size={16} weight="bold" />
             </Button>
-            <div className="inline-flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 px-1 py-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
+            <div className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)] px-1 py-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-purple)] shrink-0" />
               <span>Без правильных и неправильных ответов</span>
             </div>
           </div>
@@ -95,10 +95,10 @@ export function ExplorePage() {
       {/* Filter and Section Title with anchor ID */}
       <div id="tests-catalog" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 scroll-mt-20">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white">
+          <h2 className="text-xl sm:text-2xl font-bold text-[var(--foreground)]">
             Выберите исследование
           </h2>
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-[var(--text-muted)]">
             {filteredTests.length} {filteredTests.length === 1 ? 'исследование' : 'исследования'} · подробный разбор + карта + PDF
           </span>
         </div>

@@ -19,18 +19,18 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 py-3.5 bg-[#fbfbfa]/90 dark:bg-black/90 backdrop-blur-md border-b border-zinc-200/80 dark:border-white/10 transition-colors">
+    <header className="sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 py-3.5 bg-[var(--background)]/85 backdrop-blur-md border-b border-[var(--border)] transition-colors">
       {/* Mobile brand & toggle */}
       <div className="flex items-center gap-2.5 md:hidden">
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 rounded-xl text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-neutral-900 transition-colors"
+          className="p-2 rounded-xl text-[var(--foreground)] hover:bg-[var(--surface-2)] transition-colors"
           aria-label="Меню"
         >
           {mobileMenuOpen ? <X size={20} /> : <List size={20} />}
         </button>
-        <Link href="/" className="inline-flex items-center gap-2 font-bold text-lg text-zinc-900 dark:text-white">
-          <div className="relative w-6 h-6 rounded-full overflow-hidden border border-zinc-300 dark:border-white/20 shrink-0">
+        <Link href="/" className="inline-flex items-center gap-2 font-bold text-lg text-[var(--foreground)]">
+          <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[var(--border)] shrink-0">
             <Image
               src="/logo.png"
               alt="Логотип тень"
@@ -45,7 +45,7 @@ export function Header() {
       </div>
 
       {/* Desktop breadcrumb */}
-      <div className="hidden md:flex items-center gap-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+      <div className="hidden md:flex items-center gap-2 text-xs font-medium text-[var(--text-muted)]">
         <span>{getBreadcrumb()}</span>
       </div>
 
@@ -53,19 +53,19 @@ export function Header() {
       <div className="flex items-center gap-2 sm:gap-3">
         <ThemeToggle />
 
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white dark:bg-black text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/40 shadow-xs dark:shadow-none transition-colors">
-          <ShieldCheck size={14} weight="fill" className="text-purple-600 dark:text-purple-400" />
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[var(--surface-2)] text-[var(--accent-purple)] border border-[var(--border-hover)] shadow-xs transition-colors">
+          <ShieldCheck size={14} weight="fill" className="text-[var(--accent-purple)]" />
           <span className="hidden xs:inline sm:inline">Защищенный профиль</span>
         </span>
       </div>
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-x-0 top-[61px] bg-white dark:bg-black text-zinc-900 dark:text-white p-5 border-b border-zinc-200 dark:border-white/10 flex flex-col gap-2.5 md:hidden shadow-2xl z-40 transition-colors">
+        <div className="fixed inset-x-0 top-[61px] bg-[var(--surface-1)] text-[var(--foreground)] p-5 border-b border-[var(--border)] flex flex-col gap-2.5 md:hidden shadow-2xl z-40 transition-colors">
           <Link
             href="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-neutral-900 text-sm font-medium text-zinc-700 dark:text-zinc-200 transition-colors"
+            className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--surface-2)] text-sm font-medium text-[var(--foreground)] transition-colors"
           >
             <Compass size={18} className="text-purple-600 dark:text-purple-400" />
             <span>Выбрать тест</span>

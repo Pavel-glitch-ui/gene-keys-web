@@ -28,21 +28,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#fbfbfa] dark:bg-black text-zinc-900 dark:text-white font-sans antialiased selection:bg-purple-200 selection:text-purple-900 dark:selection:bg-purple-900 dark:selection:text-white transition-colors">
+    <div className="min-h-screen flex bg-[var(--background)] text-[var(--foreground)] font-sans antialiased cosmic-radial-bg transition-colors">
       {/* Desktop Sidebar */}
       <div className="hidden md:flex">
         <Sidebar />
       </div>
 
       {/* Main Content Column */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#fbfbfa] dark:bg-black transition-colors">
+      <div className="flex-1 flex flex-col min-w-0 bg-transparent transition-colors">
         <Header />
 
         <main className="flex-1 p-4 sm:p-8 max-w-6xl w-full mx-auto">
           {children}
         </main>
 
-        <footer className="py-6 px-6 sm:px-8 border-t border-zinc-200/80 dark:border-white/10 text-xs text-zinc-500 flex flex-col sm:flex-row items-center justify-between gap-3 transition-colors">
+        <footer className="py-6 px-6 sm:px-8 border-t border-[var(--border)] text-xs text-[var(--text-muted)] flex flex-col sm:flex-row items-center justify-between gap-3 transition-colors">
           <span>тень — пространство глубинной диагностики</span>
           <span className="flex items-center gap-1.5">
             Без правильных и неправильных ответов

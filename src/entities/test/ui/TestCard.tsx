@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import type { TestSchema } from '@/entities/test/model/types';
 import { Badge } from '@/shared/ui/Badge';
 import { Button } from '@/shared/ui/Button';
-import { FileText, ArrowUpRight, Compass, Sparkle, Sun, Brain } from '@phosphor-icons/react';
+import { FileText, ArrowUpRight, Compass, Sparkle, Sun, FlowerLotus, Brain } from '@phosphor-icons/react';
 
 export interface TestCardProps {
   test: TestSchema;
@@ -16,15 +16,17 @@ export function TestCard({ test, onStart }: TestCardProps) {
   const getIcon = (id: string) => {
     switch (id) {
       case 'genes':
-        return <Compass size={22} weight="regular" className="text-purple-600 dark:text-purple-400" />;
+        return <Compass size={22} weight="regular" className="text-[var(--accent-purple)]" />;
       case 'archetype':
-        return <Sparkle size={22} weight="regular" className="text-purple-600 dark:text-purple-400" />;
+        return <Sparkle size={22} weight="regular" className="text-[var(--accent-purple)]" />;
+      case 'igigay':
+        return <FlowerLotus size={22} weight="regular" className="text-[var(--accent-purple)]" />;
       case 'natal':
-        return <Sun size={22} weight="regular" className="text-purple-600 dark:text-purple-400" />;
+        return <Sun size={22} weight="regular" className="text-[var(--accent-purple)]" />;
       case 'bigfive':
-        return <Brain size={22} weight="regular" className="text-purple-600 dark:text-purple-400" />;
+        return <Brain size={22} weight="regular" className="text-[var(--accent-purple)]" />;
       default:
-        return <Sparkle size={22} weight="regular" className="text-purple-600 dark:text-purple-400" />;
+        return <Sparkle size={22} weight="regular" className="text-[var(--accent-purple)]" />;
     }
   };
 
@@ -32,34 +34,34 @@ export function TestCard({ test, onStart }: TestCardProps) {
     <motion.article
       whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
       whileTap={{ scale: 0.985 }}
-      className="group relative flex flex-col justify-between p-5 sm:p-7 rounded-2xl bg-white dark:bg-black border border-zinc-200/80 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/50 shadow-sm hover:shadow-md dark:shadow-none transition-all duration-200"
+      className="group relative flex flex-col justify-between p-5 sm:p-7 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] hover:border-[var(--accent-purple)]/60 shadow-sm hover:shadow-lg hover:shadow-purple-950/5 dark:hover:shadow-purple-950/30 transition-all duration-200"
     >
       <div>
         {/* Top bar */}
         <div className="flex items-center justify-between gap-3 mb-5">
-          <div className="w-11 h-11 rounded-xl bg-zinc-50 dark:bg-black border border-zinc-200 dark:border-white/15 flex items-center justify-center group-hover:border-purple-300 dark:group-hover:border-purple-500/30 transition-colors">
+          <div className="w-11 h-11 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center group-hover:border-[var(--border-hover)] transition-colors">
             {getIcon(test.id)}
           </div>
           <Badge variant="purple">{test.tag}</Badge>
         </div>
 
         {/* Title & Description */}
-        <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-2 group-hover:text-purple-700 dark:group-hover:text-purple-200 transition-colors">
+        <h3 className="text-xl font-bold text-[var(--foreground)] mb-2 group-hover:text-[var(--accent-purple)] transition-colors">
           {test.title}
         </h3>
-        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 line-clamp-3 mb-6">
+        <p className="text-sm leading-relaxed text-[var(--text-secondary)] line-clamp-3 mb-6">
           {test.desc}
         </p>
       </div>
 
       <div>
         {/* Deliverables snippet */}
-        <div className="text-[11px] text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-black rounded-xl px-3.5 py-2.5 mb-5 border border-zinc-200/80 dark:border-white/10 flex items-center justify-between transition-colors">
-          <span className="flex items-center gap-1.5 font-medium text-zinc-800 dark:text-zinc-300">
-            <FileText size={14} className="text-purple-600 dark:text-purple-400" />
+        <div className="text-[11px] text-[var(--text-muted)] bg-[var(--surface-2)] rounded-xl px-3.5 py-2.5 mb-5 border border-[var(--border)] flex items-center justify-between transition-colors">
+          <span className="flex items-center gap-1.5 font-medium text-[var(--text-primary)]">
+            <FileText size={14} className="text-[var(--accent-purple)]" />
             {test.format}
           </span>
-          <span className="text-zinc-400 dark:text-zinc-500">• PDF в Telegram</span>
+          <span className="text-[var(--text-muted)]">• PDF в Telegram</span>
         </div>
 
         <Button
