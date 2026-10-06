@@ -1,3 +1,7 @@
+packages:
+  - 'web'
+  - 'bot'
+
 # Разрешаем сборку конкретных пакетов для pnpm v11+
 allowBuilds:
   esbuild: true
