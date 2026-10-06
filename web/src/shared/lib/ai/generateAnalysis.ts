@@ -1,4 +1,5 @@
 import { openrouter, OPENROUTER_MODEL } from './openrouter';
+import { safeParseLlmJson } from './jsonHelper';
 import {
   ARCHETYPE_SYSTEM_PROMPT,
   buildArchetypeUserPrompt,
@@ -139,7 +140,7 @@ export async function generateAnalysis(
     const content = response.choices?.[0]?.message?.content || '';
 
     try {
-      const parsedData = JSON.parse(content);
+      const parsedData = safeParseLlmJson(content);
       return {
         success: true,
         testId,
@@ -147,18 +148,6 @@ export async function generateAnalysis(
         rawText: content,
       };
     } catch {
-      // If LLM returned text wrapped in ```json
-      const match = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-      if (match && match[1]) {
-        const parsed = JSON.parse(match[1]);
-        return {
-          success: true,
-          testId,
-          data: parsed,
-          rawText: content,
-        };
-      }
-
       return {
         success: false,
         testId,

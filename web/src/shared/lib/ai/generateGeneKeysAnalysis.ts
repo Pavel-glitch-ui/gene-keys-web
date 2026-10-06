@@ -1,4 +1,5 @@
 import { openrouter, OPENROUTER_MODEL } from './openrouter';
+import { safeParseLlmJson } from './jsonHelper';
 
 export interface GeneKeysKeyAspect {
   name: string;
@@ -146,7 +147,7 @@ export async function generateGeneKeysAnalysis(
       throw new Error('Пустой ответ от OpenRouter API');
     }
 
-    const parsed = JSON.parse(content) as GeneKeysAIAnalysis;
+    const parsed = safeParseLlmJson<GeneKeysAIAnalysis>(content);
     return parsed;
   } catch (error) {
     console.error('[OpenRouter Gene Keys API Error, falling back to local model]:', error);

@@ -36,12 +36,28 @@ export async function generateAssessmentPdf(params: GeneratePdfParams): Promise<
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
 
-  const fontsDir = path.resolve(process.cwd(), 'src/shared/assets/fonts');
-  const regularPath = path.join(fontsDir, 'arial.ttf');
-  const boldPath = path.join(fontsDir, 'arialbd.ttf');
+  const possibleFontsDirs = [
+    path.resolve(process.cwd(), 'src/shared/assets/fonts'),
+    path.resolve(process.cwd(), 'web/src/shared/assets/fonts'),
+    path.resolve(__dirname, '../../../../src/shared/assets/fonts'),
+    path.resolve(__dirname, '../../../assets/fonts'),
+  ];
 
-  if (!fs.existsSync(regularPath) || !fs.existsSync(boldPath)) {
-    throw new Error('Required Cyrillic fonts (arial.ttf, arialbd.ttf) not found in src/shared/assets/fonts');
+  let regularPath = '';
+  let boldPath = '';
+
+  for (const dir of possibleFontsDirs) {
+    const reg = path.join(dir, 'arial.ttf');
+    const bld = path.join(dir, 'arialbd.ttf');
+    if (fs.existsSync(reg) && fs.existsSync(bld)) {
+      regularPath = reg;
+      boldPath = bld;
+      break;
+    }
+  }
+
+  if (!regularPath || !boldPath) {
+    throw new Error('Required Cyrillic fonts (arial.ttf, arialbd.ttf) not found');
   }
 
   const regularBytes = fs.readFileSync(regularPath);
