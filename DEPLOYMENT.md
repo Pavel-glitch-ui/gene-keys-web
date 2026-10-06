@@ -41,8 +41,8 @@ cd /opt/gene-keys
 NEXT_PUBLIC_APP_URL=https://app.yourdomain.com
 TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrSTUvwxYZ
 TELEGRAM_ADMIN_CHAT_ID=123456789
-TELEGRAM_REQUIRED_CHAT_ID=-1001234567890
-OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxx
+OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxx
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 Пример переменных для `bot/.env`:

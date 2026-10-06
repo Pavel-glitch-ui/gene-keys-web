@@ -1,4 +1,4 @@
-import { openrouter, OPENROUTER_MODEL } from './openrouter';
+import { openai, OPENAI_MODEL } from './openai';
 import { safeParseLlmJson } from './jsonHelper';
 
 export interface GeneKeysKeyAspect {
@@ -61,10 +61,10 @@ export interface UserAssessmentInput {
 export async function generateGeneKeysAnalysis(
   input: UserAssessmentInput
 ): Promise<GeneKeysAIAnalysis> {
-  const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
 
   // If no API key configured, use deterministic fallback
-  if (!apiKey || apiKey === 'dummy-openrouter-key') {
+  if (!apiKey || apiKey === 'dummy-openai-key') {
     return generateFallbackAnalysis(input);
   }
 
@@ -132,8 +132,8 @@ export async function generateGeneKeysAnalysis(
 Личные заметки и рефлексия: ${input.reflectionText || 'Без дополнительного текста'}`;
 
   try {
-    const response = await openrouter.chat.completions.create({
-      model: OPENROUTER_MODEL,
+    const response = await openai.chat.completions.create({
+      model: OPENAI_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPayload },
@@ -145,13 +145,13 @@ export async function generateGeneKeysAnalysis(
 
     const content = response.choices[0]?.message?.content;
     if (!content) {
-      throw new Error('Пустой ответ от OpenRouter API');
+      throw new Error('Пустой ответ от OpenAI API');
     }
 
     const parsed = safeParseLlmJson<GeneKeysAIAnalysis>(content);
     return parsed;
   } catch (error) {
-    console.error('[OpenRouter Gene Keys API Error, falling back to local model]:', error);
+    console.error('[OpenAI Gene Keys API Error, falling back to local model]:', error);
     return generateFallbackAnalysis(input);
   }
 }

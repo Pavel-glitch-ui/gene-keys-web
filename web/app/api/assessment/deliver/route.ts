@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 1. Run Gene Keys AI analysis via OpenRouter (or fallback)
+    // 1. Run Gene Keys AI analysis via OpenAI (or fallback)
     const aiAnalysis = await generateGeneKeysAnalysis({
       name: profile?.name || 'Личное исследование',
       focus: profile?.focus || 'Общий портрет',

@@ -1,4 +1,4 @@
-import { openrouter, OPENROUTER_MODEL } from './openrouter';
+import { openai, OPENAI_MODEL } from './openai';
 import { safeParseLlmJson } from './jsonHelper';
 import {
   ARCHETYPE_SYSTEM_PROMPT,
@@ -127,8 +127,8 @@ export async function generateAnalysis(
   }
 
   try {
-    const response = await openrouter.chat.completions.create({
-      model: OPENROUTER_MODEL,
+    const response = await openai.chat.completions.create({
+      model: OPENAI_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
