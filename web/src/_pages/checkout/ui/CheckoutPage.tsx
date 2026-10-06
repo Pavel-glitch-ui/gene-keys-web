@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAppState } from '@/src/_app/providers/AppStateProvider';
 import { useTelegramContext } from '@/src/shared/lib/telegram';
+import { useToast } from '@/src/shared/ui/Toast';
 import { Button } from '@/src/shared/ui/Button';
 import { Badge } from '@/src/shared/ui/Badge';
 import { FeedbackModal, type FeedbackData } from '@/src/features/feedback';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   FilePdf,
   Sparkle,
@@ -18,16 +20,39 @@ import {
   ArrowRight,
   ShieldCheck,
   Spinner,
+  ArrowClockwise,
 } from '@phosphor-icons/react';
 
 export function CheckoutPage() {
   const { activeReport } = useAppState();
   const { chatId, setChatId } = useTelegramContext();
 
+  const toast = useToast();
   const [inputChatId, setInputChatId] = useState(chatId || '');
   const [isSending, setIsSending] = useState(false);
   const [isDelivered, setIsDelivered] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [hasFailed, setHasFailed] = useState(false);
+
+  type DeliveryStage =
+    | 'idle'
+    | 'init'
+    | 'analyzing'
+    | 'synthesizing'
+    | 'rendering_pdf'
+    | 'delivering';
+
+  const [deliveryStage, setDeliveryStage] = useState<DeliveryStage>('idle');
+  const stageIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number>(0);
+
+  useEffect(() => {
+    return () => {
+      if (stageIntervalRef.current) {
+        clearInterval(stageIntervalRef.current);
+      }
+    };
+  }, []);
 
   // Feedback modal state
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
@@ -61,12 +86,32 @@ export function CheckoutPage() {
 
   const executeDelivery = async (savedFeedback?: FeedbackData) => {
     if (!effectiveChatId) {
-      setErrorMessage('Пожалуйста, укажите ваш Telegram Chat ID или @username для отправки отчета.');
+      const msg = 'Пожалуйста, укажите ваш Telegram Chat ID или @username для отправки отчета.';
+      setErrorMessage(msg);
+      toast.error(msg, 'Не указан Chat ID');
       return;
     }
 
     setIsSending(true);
     setErrorMessage(null);
+    setHasFailed(false);
+    setDeliveryStage('init');
+    startTimeRef.current = Date.now();
+
+    stageIntervalRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      if (elapsed < 4) {
+        setDeliveryStage('init');
+      } else if (elapsed < 24) {
+        setDeliveryStage('analyzing');
+      } else if (elapsed < 50) {
+        setDeliveryStage('synthesizing');
+      } else if (elapsed < 75) {
+        setDeliveryStage('rendering_pdf');
+      } else {
+        setDeliveryStage('delivering');
+      }
+    }, 1000);
 
     try {
       if (!chatId && inputChatId) {
@@ -95,11 +140,19 @@ export function CheckoutPage() {
       }
 
       setIsDelivered(true);
+      toast.success('Персональный разбор успешно отправлен в Telegram!', 'Доставка успешна');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Произошла ошибка при отправке.';
       setErrorMessage(msg);
+      setHasFailed(true);
+      toast.error(msg, 'Ошибка генерации');
     } finally {
+      if (stageIntervalRef.current) {
+        clearInterval(stageIntervalRef.current);
+        stageIntervalRef.current = null;
+      }
       setIsSending(false);
+      setDeliveryStage('idle');
     }
   };
 
@@ -184,6 +237,49 @@ export function CheckoutPage() {
       </div>
     );
   }
+
+  const getStageContent = () => {
+    switch (deliveryStage) {
+      case 'init':
+        return {
+          icon: <Spinner size={18} className="animate-spin text-purple-400" />,
+          text: 'Инициализация ИИ-анализа…',
+        };
+      case 'analyzing':
+        return {
+          icon: <Spinner size={18} className="animate-spin text-purple-400" />,
+          text: 'ИИ рассчитывает сферы и ключи…',
+        };
+      case 'synthesizing':
+        return {
+          icon: <Spinner size={18} className="animate-spin text-purple-400" />,
+          text: 'Синтез перехода Тени в Дар…',
+        };
+      case 'rendering_pdf':
+        return {
+          icon: <Spinner size={18} className="animate-spin text-purple-400" />,
+          text: 'Компиляция векторного PDF…',
+        };
+      case 'delivering':
+        return {
+          icon: <Spinner size={18} className="animate-spin text-purple-400" />,
+          text: 'Доставка документа в Telegram…',
+        };
+      default:
+        if (hasFailed) {
+          return {
+            icon: <ArrowClockwise size={18} weight="bold" className="text-amber-400" />,
+            text: 'Попробовать отправить снова',
+          };
+        }
+        return {
+          icon: <PaperPlaneTilt size={18} weight="fill" />,
+          text: feedback
+            ? 'Отправить мой отчет в Telegram (Бесплатно)'
+            : 'Оставить отзыв и получить PDF в Telegram (Бесплатно)',
+        };
+    }
+  };
 
   // TEASER & PAYWALL STATE
   return (
@@ -314,23 +410,21 @@ export function CheckoutPage() {
             fullWidth
             type="submit"
             disabled={isSending}
-            className="gap-2"
+            className="gap-2 transition-all relative overflow-hidden"
           >
-            {isSending ? (
-              <>
-                <Spinner size={18} className="animate-spin" />
-                <span>Генерируем AI-досье и отправляем в Telegram…</span>
-              </>
-            ) : (
-              <>
-                <PaperPlaneTilt size={18} weight="fill" />
-                <span>
-                  {feedback
-                    ? 'Отправить мой отчет в Telegram (Бесплатно)'
-                    : 'Оставить отзыв и получить PDF в Telegram (Бесплатно)'}
-                </span>
-              </>
-            )}
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={isSending ? deliveryStage : (hasFailed ? 'retry' : 'idle')}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                transition={{ duration: 0.18 }}
+                className="inline-flex items-center justify-center gap-2"
+              >
+                {getStageContent().icon}
+                <span>{getStageContent().text}</span>
+              </motion.span>
+            </AnimatePresence>
           </Button>
 
           <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-500 text-center">

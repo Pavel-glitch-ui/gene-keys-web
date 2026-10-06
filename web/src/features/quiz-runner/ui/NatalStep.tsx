@@ -51,7 +51,7 @@ export function NatalStep({ onSubmit }: NatalStepProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <div className="text-center mb-2">
+      <div className="text-center mb-2 px-8 sm:px-0 pt-0.5 sm:pt-0">
         <h3 className="text-xl sm:text-2xl font-bold text-[var(--foreground)]">
           Небо в момент вашего рождения
         </h3>

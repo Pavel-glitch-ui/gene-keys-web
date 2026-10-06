@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
 import { TelegramProvider } from '@/src/shared/lib/telegram';
+import { ToastProvider } from '@/src/shared/ui/Toast';
 import { AppStateProvider, ThemeProvider } from '@/src/_app/providers';
 import { AppShell } from '@/src/_app/ui/AppShell';
 
@@ -45,9 +46,11 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans">
         <ThemeProvider>
           <TelegramProvider>
-            <AppStateProvider>
-              <AppShell>{children}</AppShell>
-            </AppStateProvider>
+            <ToastProvider>
+              <AppStateProvider>
+                <AppShell>{children}</AppShell>
+              </AppStateProvider>
+            </ToastProvider>
           </TelegramProvider>
         </ThemeProvider>
       </body>

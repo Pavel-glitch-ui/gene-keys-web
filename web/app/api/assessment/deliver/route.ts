@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateAssessmentPdf } from '@/src/shared/lib/pdf/generatePdf';
 import { generateGeneKeysAnalysis } from '@/src/shared/lib/ai/generateGeneKeysAnalysis';
 
+export const maxDuration = 120;
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

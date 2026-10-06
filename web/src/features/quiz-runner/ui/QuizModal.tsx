@@ -173,11 +173,11 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
       {/* Intake Phase */}
       {phase === 'intake' && (
         <div>
-          <div className="text-center mb-6">
-            <span className="text-xs uppercase tracking-widest text-purple-400 font-semibold">
+          <div className="text-center mb-6 px-8 sm:px-0 pt-0.5 sm:pt-0">
+            <span className="text-xs uppercase tracking-widest text-purple-600 dark:text-purple-400 font-semibold">
               Личное исследование
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">
+            <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white mt-1">
               {test.title}
             </h2>
           </div>
@@ -199,12 +199,12 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
       {phase === 'questions' && currentQ && (
         <div className="flex flex-col gap-6">
           {/* Top Progress & Step counter */}
-          <div>
+          <div className="pr-10 sm:pr-12 pt-0.5">
             <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-2">
-              <span className="font-medium text-zinc-900 dark:text-white">
+              <span className="font-medium text-zinc-900 dark:text-white truncate max-w-[200px] sm:max-w-none">
                 {test.title}
               </span>
-              <span className="font-mono text-zinc-500 dark:text-zinc-400">
+              <span className="font-mono text-zinc-500 dark:text-zinc-400 shrink-0">
                 {step + 1} / {test.questions.length}
               </span>
             </div>

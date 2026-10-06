@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShieldCheck, List, X, Compass, Info } from '@phosphor-icons/react';
+import { List, X, Compass, Info } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { ThemeToggle } from '@/src/features/theme-toggle';
 
@@ -49,14 +49,9 @@ export function Header() {
         <span>{getBreadcrumb()}</span>
       </div>
 
-      {/* Right controls: ThemeToggle + Private badge indicator */}
+      {/* Right controls: ThemeToggle */}
       <div className="flex items-center gap-2 sm:gap-3">
         <ThemeToggle />
-
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[var(--surface-2)] text-[var(--accent-purple)] border border-[var(--border-hover)] shadow-xs transition-colors">
-          <ShieldCheck size={14} weight="fill" className="text-[var(--accent-purple)]" />
-          <span className="hidden xs:inline sm:inline">Защищенный профиль</span>
-        </span>
       </div>
 
       {/* Mobile Drawer Menu */}
