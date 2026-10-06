@@ -22,11 +22,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy dependency manifests first to maximize Docker layer cache hits
-COPY package.json pnpm-lock.yaml* .npmrc* pnpm-workspace.yaml* ./
+COPY package.json .npmrc* ./
 
 # Fast install using BuildKit cache mount for pnpm store
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --frozen-lockfile
+    pnpm install
 
 # ==========================================
 # 3. Builder Stage: Next.js Optimized Build

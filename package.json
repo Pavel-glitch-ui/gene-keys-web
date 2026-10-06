@@ -1,41 +1,13 @@
 {
-  "name": "gene-keys-web",
+  "name": "gene-keys-monorepo",
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@10.17.1",
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "bot:dev": "tsx scripts/dev-bot.ts"
-  },
-  "dependencies": {
-    "@pdf-lib/fontkit": "^1.1.1",
-    "@phosphor-icons/react": "^2.1.10",
-    "esbuild": "^0.25.0",
-    "framer-motion": "^14.0.0",
-    "free-human-design": "^1.0.1",
-    "grammy": "^1.46.0",
-    "gsap": "^3.15.0",
-    "next": "16.3.8",
-    "next-themes": "^0.4.6",
-    "openai": "^7.27.0",
-    "pdf-lib": "^1.17.1",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "swisseph": "^0.5.17",
-    "tsx": "^4.23.15"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.8",
-    "tailwindcss": "^4",
-    "tsx": "^4.23.15",
-    "typescript": "^5"
+    "dev:web": "pnpm --filter gene-keys-web dev",
+    "dev:bot": "pnpm --filter gene-keys-bot dev",
+    "build:web": "pnpm --filter gene-keys-web build",
+    "build:bot": "pnpm --filter gene-keys-bot build",
+    "lint": "pnpm --filter gene-keys-web lint"
   }
 }
