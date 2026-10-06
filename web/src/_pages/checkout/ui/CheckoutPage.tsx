@@ -223,7 +223,7 @@ export function CheckoutPage() {
         </h1>
 
         <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md mb-6">
-          Мы скомпилировали ваш персональный PDF-журнал с AI-анализом и отправили его в диалог (чат <strong>#{effectiveChatId}</strong>). Откройте Telegram — документ уже готов.
+          Мы скомпилировали ваш персональный PDF-журнал с детальным анализом и отправили его в диалог (чат <strong>#{effectiveChatId}</strong>). Откройте Telegram — документ уже готов.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -243,12 +243,12 @@ export function CheckoutPage() {
       case 'init':
         return {
           icon: <Spinner size={18} className="animate-spin text-purple-400" />,
-          text: 'Инициализация ИИ-анализа…',
+          text: 'Начинаем анализ…',
         };
       case 'analyzing':
         return {
           icon: <Spinner size={18} className="animate-spin text-purple-400" />,
-          text: 'ИИ рассчитывает сферы и ключи…',
+          text: 'Расчитываем сферы и ключи…',
         };
       case 'synthesizing':
         return {
@@ -258,12 +258,12 @@ export function CheckoutPage() {
       case 'rendering_pdf':
         return {
           icon: <Spinner size={18} className="animate-spin text-purple-400" />,
-          text: 'Компиляция векторного PDF…',
+          text: 'Создаем для вас PDF…',
         };
       case 'delivering':
         return {
           icon: <Spinner size={18} className="animate-spin text-purple-400" />,
-          text: 'Доставка документа в Telegram…',
+          text: 'Доставляем PDF в Telegram…',
         };
       default:
         if (hasFailed) {
@@ -308,7 +308,7 @@ export function CheckoutPage() {
             </span>
           </div>
           <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-50 dark:bg-black text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/40">
-            Объем: ~16 страниц
+            Объем: ~8 страниц
           </span>
         </div>
 
@@ -379,7 +379,6 @@ export function CheckoutPage() {
                 <span className="text-zinc-800 dark:text-zinc-200 font-medium">
                   Ваш Telegram Chat ID: <strong className="text-zinc-900 dark:text-white">{chatId}</strong>
                 </span>
-                <Badge variant="purple">Привязан из ссылки</Badge>
               </div>
             ) : (
               <div className="flex flex-col gap-1.5">
