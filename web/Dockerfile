@@ -68,8 +68,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/src/shared/assets ./src/shared/as
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy ephemeris data files if present in swisseph
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/swisseph/ephe ./node_modules/swisseph/ephe
 
 USER nextjs
 

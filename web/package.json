@@ -22,7 +22,6 @@
     "pdf-lib": "^1.17.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "swisseph": "^0.5.17",
     "tsx": "^4.23.15"
   },
   "devDependencies": {
