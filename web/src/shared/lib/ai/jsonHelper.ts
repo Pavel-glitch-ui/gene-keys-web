@@ -1,17 +1,20 @@
+import { jsonrepair } from 'jsonrepair';
+
 /**
  * Robust JSON parser for LLM responses.
- * Handles:
- * 1. Markdown code fences (```json ... ```)
- * 2. Leading/trailing explanatory text
- * 3. Unescaped control characters (raw \n, \r, \t, etc. inside string literals)
+ * Uses `jsonrepair` to automatically fix:
+ * 1. Markdown code fences (```json ... ```) and conversational preamble/postamble
+ * 2. Unescaped control characters (raw \n, \r, \t) inside string literals
  *    which cause "SyntaxError: Bad control character in string literal in JSON"
+ * 3. Unescaped quotes inside string values (e.g., "слово "в кавычках"")
+ * 4. Trailing commas, single quotes, missing closing braces/brackets
  */
 export function safeParseLlmJson<T = unknown>(raw: string): T {
   if (!raw || typeof raw !== 'string') {
     throw new Error('Empty JSON response from model');
   }
 
-  // 1. Remove markdown fences if present
+  // 1. Strip markdown fences if present
   let clean = raw.trim();
   const fenceMatch = clean.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
   if (fenceMatch && fenceMatch[1]) {
@@ -30,63 +33,16 @@ export function safeParseLlmJson<T = unknown>(raw: string): T {
   // 3. Fast path: try standard JSON.parse
   try {
     return JSON.parse(clean) as T;
-  } catch (initialErr) {
-    // 4. Fallback path: sanitize raw control characters inside double-quoted string literals
+  } catch {
+    // 4. Robust path: use jsonrepair
     try {
-      const sanitized = sanitizeControlCharactersInJson(clean);
-      return JSON.parse(sanitized) as T;
+      const repaired = jsonrepair(clean);
+      return JSON.parse(repaired) as T;
     } catch {
-      // Re-throw original error with context if sanitization still failed
-      throw initialErr;
+      // 5. Ultimate fallback: sanitize dangerous non-printable control characters and repair again
+      const sanitized = clean.replace(/[\u0000-\u0009\u000B-\u001F\u007F-\u009F]/g, ' ');
+      const finalRepaired = jsonrepair(sanitized);
+      return JSON.parse(finalRepaired) as T;
     }
   }
-}
-
-/**
- * Iterates through the JSON string and escapes raw control characters (bytes < 0x20)
- * that occur inside double-quoted string literals without altering structural whitespace.
- */
-export function sanitizeControlCharactersInJson(input: string): string {
-  let result = '';
-  let inString = false;
-  let isEscaped = false;
-
-  for (let i = 0; i < input.length; i++) {
-    const char = input[i];
-
-    if (inString) {
-      if (isEscaped) {
-        result += char;
-        isEscaped = false;
-      } else if (char === '\\') {
-        result += char;
-        isEscaped = true;
-      } else if (char === '"') {
-        result += char;
-        inString = false;
-      } else {
-        const code = char.charCodeAt(0);
-        if (code < 32) {
-          if (char === '\n') {
-            result += '\\n';
-          } else if (char === '\r') {
-            result += '\\r';
-          } else if (char === '\t') {
-            result += '\\t';
-          } else {
-            result += `\\u${code.toString(16).padStart(4, '0')}`;
-          }
-        } else {
-          result += char;
-        }
-      }
-    } else {
-      if (char === '"') {
-        inString = true;
-      }
-      result += char;
-    }
-  }
-
-  return result;
 }
