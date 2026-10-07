@@ -118,6 +118,21 @@ export function CheckoutPage() {
         setChatId(inputChatId.trim());
       }
 
+      const scaleLabels = ['Точно нет', 'Скорее нет', 'Иногда', 'Скорее да', 'Точно да'];
+      const formattedAnswers = (activeReport.test.questions || []).map((q, idx) => {
+        const raw = activeReport.answers?.[idx];
+        const isScale = typeof raw === 'number';
+        const label = isScale ? (scaleLabels[raw] || String(raw)) : undefined;
+        const text = typeof raw === 'object' && raw?.text ? raw.text : undefined;
+        return {
+          questionId: `q_${idx + 1}`,
+          questionText: q.text,
+          selectedOptions: label ? [label] : [],
+          answerText: text,
+          rawScore: isScale ? raw : undefined,
+        };
+      });
+
       const response = await fetch('/api/assessment/deliver', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -127,7 +142,8 @@ export function CheckoutPage() {
           testTitle: activeReport.test.title,
           profile: activeReport.profile,
           scores: activeReport.scores,
-          answers: activeReport.answers,
+          answers: formattedAnswers,
+          rawAnswers: activeReport.answers,
           natal: activeReport.natal,
           domains: activeReport.test.domains,
           feedback: savedFeedback || feedback,

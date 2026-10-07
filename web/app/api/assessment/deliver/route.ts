@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateAssessmentPdf } from '@/src/shared/lib/pdf/generatePdf';
-import { generateGeneKeysAnalysis } from '@/src/shared/lib/ai/generateGeneKeysAnalysis';
+import { generateAnalysis, getFallbackAnalysisForTest } from '@/src/shared/lib/ai/generateAnalysis';
 
 export const maxDuration = 120;
 
@@ -8,9 +8,11 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { chatId, testTitle, profile, scores, domains, answers, natal, feedback } = body;
+    const testId = body.testId || (testTitle?.toLowerCase().includes('икигай') ? 'igigay' : 'genes');
 
     console.log('[Assessment Deliver] Request received', {
       chatId,
+      testId,
       testTitle,
       profileName: profile?.name,
       profileFocus: profile?.focus,
@@ -31,52 +33,73 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let reflectionText = '';
+    const scaleLabels = ['Точно нет', 'Скорее нет', 'Иногда', 'Скорее да', 'Точно да'];
+    let formattedAnswers: Array<{
+      questionId?: string;
+      questionText: string;
+      selectedOptions?: string[];
+      answerText?: string;
+    }> = [];
+
     if (Array.isArray(answers)) {
-      const textParts = answers
-        .filter((a) => a && typeof a === 'object' && a.text && !a.skipped)
-        .map((a) => a.text);
-      if (textParts.length > 0) {
-        reflectionText = textParts.join('\n\n');
-      }
+      formattedAnswers = answers.map((a: any, idx: number) => {
+        if (a && typeof a === 'object' && ('questionText' in a || 'selectedOptions' in a)) {
+          return {
+            questionId: a.questionId || `q_${idx + 1}`,
+            questionText: a.questionText || `Вопрос ${idx + 1}`,
+            selectedOptions: Array.isArray(a.selectedOptions) ? a.selectedOptions : [],
+            answerText: a.answerText || (typeof a.text === 'string' ? a.text : undefined),
+          };
+        }
+        if (typeof a === 'number') {
+          return {
+            questionId: `q_${idx + 1}`,
+            questionText: `Вопрос ${idx + 1}`,
+            selectedOptions: [scaleLabels[a] || String(a)],
+          };
+        }
+        if (typeof a === 'object' && a && 'text' in a) {
+          return {
+            questionId: `q_${idx + 1}`,
+            questionText: `Вопрос ${idx + 1}`,
+            answerText: a.text,
+          };
+        }
+        return {
+          questionId: `q_${idx + 1}`,
+          questionText: `Вопрос ${idx + 1}`,
+          answerText: String(a || ''),
+        };
+      });
     }
 
     console.log('[Assessment Deliver] Starting AI generation', {
-      reflectionTextLength: reflectionText.length,
+      testId,
+      answersCount: formattedAnswers.length,
       hasBirthDate: Boolean(natal?.date),
       hasBirthTime: Boolean(natal?.time),
       hasBirthPlace: Boolean(natal?.place),
       testTitle: testTitle || 'Генные Ключи',
     });
 
-    let aiAnalysis;
+    let aiAnalysisResult: any = null;
     try {
-      aiAnalysis = await generateGeneKeysAnalysis({
-        name: profile?.name || 'Личное исследование',
-        focus: profile?.focus || 'Общий портрет',
-        birthDate: natal?.date,
-        birthTime: natal?.time,
-        birthPlace: natal?.place,
-        testTitle: testTitle || 'Генные Ключи',
-        scores,
-        domains,
-        reflectionText,
+      const result = await generateAnalysis({
+        testId,
+        userName: profile?.name || 'Личное исследование',
+        answers: formattedAnswers,
+        calculationData: natal,
       });
+
+      aiAnalysisResult = result.data;
       console.log('[Assessment Deliver] AI analysis generated successfully', {
-        formatNotice: aiAnalysis?.formatNotice ? 'present' : 'missing',
-        activationKeys: aiAnalysis?.activationSequence ? Object.keys(aiAnalysis.activationSequence).length : 0,
-        venusKeys: aiAnalysis?.venusSequence ? Object.keys(aiAnalysis.venusSequence).length : 0,
-        pearlKeys: aiAnalysis?.pearlSequence ? Object.keys(aiAnalysis.pearlSequence).length : 0,
+        testId,
+        success: result.success,
+        hasData: Boolean(result.data),
       });
     } catch (err) {
       console.error('[Assessment Deliver] AI generation failed with exception', err);
-      return NextResponse.json(
-        {
-          error: err instanceof Error ? err.message : 'Не удалось сгенерировать AI-анализ.',
-          stage: 'ai_generation',
-        },
-        { status: 500 }
-      );
+      aiAnalysisResult = getFallbackAnalysisForTest(testId, profile?.name);
     }
 
     console.log('[Assessment Deliver] Starting PDF generation');
@@ -84,13 +107,15 @@ export async function POST(req: NextRequest) {
     let pdfBytes;
     try {
       pdfBytes = await generateAssessmentPdf({
-        title: testTitle || 'Генные Ключи',
+        testId,
+        title: testTitle || (testId === 'igigay' ? 'Икигай: Точка сборки' : 'Генные Ключи'),
         name: profile?.name || 'Личное исследование',
         focus: profile?.focus || 'Общий портрет',
         date: new Date().toLocaleDateString('ru-RU'),
         domains: domains || [],
         scores: scores || [],
-        aiAnalysis,
+        aiAnalysis: testId === 'genes' ? aiAnalysisResult : undefined,
+        analysisData: aiAnalysisResult,
       });
       console.log('[Assessment Deliver] PDF generated successfully', {
         bytesLength: pdfBytes?.length || 0,
@@ -118,18 +143,24 @@ export async function POST(req: NextRequest) {
       formData.append('chat_id', String(chatId));
 
       const pdfBlob = new Blob([Buffer.from(pdfBytes)], { type: 'application/pdf' });
-      formData.append('document', pdfBlob, `${testTitle || 'ten'}-report.pdf`);
-      formData.append(
-        'caption',
-        `✨ Здравствуйте, ${profile?.name || 'друг'}!\n\nВаш персональный хологенетический профиль по исследованию «${testTitle || 'Генные Ключи'}» готов.\n\nИсследование завершено успешно.`
-      );
+      const fileName = `${testTitle || 'исследование'}-отчет.pdf`;
+      formData.append('document', pdfBlob, fileName);
+
+      let caption = `✨ Здравствуйте, ${profile?.name || 'друг'}!\n\nВаш персональный разбор по исследованию «${testTitle || 'Тень'}» сформирован с помощью ИИ и готов в PDF.\n\nИсследование завершено успешно.`;
+      if (testId === 'igigay' || testTitle?.toLowerCase().includes('икигай')) {
+        caption = `✨ Здравствуйте, ${profile?.name || 'друг'}!\n\nВаш персональный разбор по исследованию «${testTitle || 'Икигай: Точка сборки'}» готов в PDF.\n\nВнутри: Персональная формула Икигай, баланс 4 сфер (Страсть, Мастерство, Спрос, Миссия), анализ пересечений и 3-этапная дорожная карта практических шагов.`;
+      } else if (testId === 'genes' || testTitle?.toLowerCase().includes('золотой путь')) {
+        caption = `✨ Здравствуйте, ${profile?.name || 'друг'}!\n\nВаш персональный хологенетический профиль по исследованию «${testTitle || 'Золотой Путь'}» сформирован с помощью ИИ и готов в PDF.\n\nВнутри: Активация, Венера, Жемчужина и 4-недельная программа перехода Тени в Дар.`;
+      }
+
+      formData.append('caption', caption);
 
       const apiRoot = (process.env.TELEGRAM_API_ROOT || 'https://api.telegram.org').replace(/\/+$/, '');
       const sendDocumentUrl = `${apiRoot}/bot${botToken}/sendDocument`;
 
       console.log('[Assessment Deliver] Sending PDF to Telegram', {
         sendDocumentUrl,
-        fileName: `${testTitle || 'ten'}-report.pdf`,
+        fileName,
       });
 
       try {
