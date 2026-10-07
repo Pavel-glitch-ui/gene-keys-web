@@ -9,6 +9,21 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { chatId, testTitle, profile, scores, domains, answers, natal, feedback } = body;
 
+    console.log('[Assessment Deliver] Request received', {
+      chatId,
+      testTitle,
+      profileName: profile?.name,
+      profileFocus: profile?.focus,
+      hasScores: Array.isArray(scores),
+      scoresLength: Array.isArray(scores) ? scores.length : 0,
+      domainsLength: Array.isArray(domains) ? domains.length : 0,
+      answersLength: Array.isArray(answers) ? answers.length : 0,
+      natalDate: natal?.date,
+      natalTime: natal?.time,
+      natalPlace: natal?.place,
+      feedbackProvided: Boolean(feedback),
+    });
+
     if (!chatId) {
       return NextResponse.json(
         { error: 'Не указан Telegram Chat ID.' },
@@ -16,7 +31,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Extract user reflection text if available
     let reflectionText = '';
     if (Array.isArray(answers)) {
       const textParts = answers
@@ -27,33 +41,78 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 1. Run Gene Keys AI analysis via OpenAI (or fallback)
-    const aiAnalysis = await generateGeneKeysAnalysis({
-      name: profile?.name || 'Личное исследование',
-      focus: profile?.focus || 'Общий портрет',
-      birthDate: natal?.date,
-      birthTime: natal?.time,
-      birthPlace: natal?.place,
+    console.log('[Assessment Deliver] Starting AI generation', {
+      reflectionTextLength: reflectionText.length,
+      hasBirthDate: Boolean(natal?.date),
+      hasBirthTime: Boolean(natal?.time),
+      hasBirthPlace: Boolean(natal?.place),
       testTitle: testTitle || 'Генные Ключи',
-      scores,
-      domains,
-      reflectionText,
     });
 
-    // 2. Generate multi-page True Black PDF with Cyrillic Arial and AI text
-    const pdfBytes = await generateAssessmentPdf({
-      title: testTitle || 'Генные Ключи',
-      name: profile?.name || 'Личное исследование',
-      focus: profile?.focus || 'Общий портрет',
-      date: new Date().toLocaleDateString('ru-RU'),
-      domains: domains || [],
-      scores: scores || [],
-      aiAnalysis,
-    });
+    let aiAnalysis;
+    try {
+      aiAnalysis = await generateGeneKeysAnalysis({
+        name: profile?.name || 'Личное исследование',
+        focus: profile?.focus || 'Общий портрет',
+        birthDate: natal?.date,
+        birthTime: natal?.time,
+        birthPlace: natal?.place,
+        testTitle: testTitle || 'Генные Ключи',
+        scores,
+        domains,
+        reflectionText,
+      });
+      console.log('[Assessment Deliver] AI analysis generated successfully', {
+        formatNotice: aiAnalysis?.formatNotice ? 'present' : 'missing',
+        activationKeys: aiAnalysis?.activationSequence ? Object.keys(aiAnalysis.activationSequence).length : 0,
+        venusKeys: aiAnalysis?.venusSequence ? Object.keys(aiAnalysis.venusSequence).length : 0,
+        pearlKeys: aiAnalysis?.pearlSequence ? Object.keys(aiAnalysis.pearlSequence).length : 0,
+      });
+    } catch (err) {
+      console.error('[Assessment Deliver] AI generation failed with exception', err);
+      return NextResponse.json(
+        {
+          error: err instanceof Error ? err.message : 'Не удалось сгенерировать AI-анализ.',
+          stage: 'ai_generation',
+        },
+        { status: 500 }
+      );
+    }
+
+    console.log('[Assessment Deliver] Starting PDF generation');
+
+    let pdfBytes;
+    try {
+      pdfBytes = await generateAssessmentPdf({
+        title: testTitle || 'Генные Ключи',
+        name: profile?.name || 'Личное исследование',
+        focus: profile?.focus || 'Общий портрет',
+        date: new Date().toLocaleDateString('ru-RU'),
+        domains: domains || [],
+        scores: scores || [],
+        aiAnalysis,
+      });
+      console.log('[Assessment Deliver] PDF generated successfully', {
+        bytesLength: pdfBytes?.length || 0,
+      });
+    } catch (pdfErr) {
+      console.error('[Assessment Deliver] PDF generation failed', pdfErr);
+      return NextResponse.json(
+        {
+          error: pdfErr instanceof Error ? pdfErr.message : 'Не удалось сгенерировать PDF.',
+          stage: 'pdf_generation',
+        },
+        { status: 500 }
+      );
+    }
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    console.log('[Assessment Deliver] Telegram bot config check', {
+      hasBotToken: Boolean(botToken),
+      apiRoot: process.env.TELEGRAM_API_ROOT || 'https://api.telegram.org',
+      chatId,
+    });
 
-    // 3. If Telegram Bot Token is configured, send the real document via Telegram Bot API
     if (botToken) {
       const formData = new FormData();
       formData.append('chat_id', String(chatId));
@@ -62,38 +121,62 @@ export async function POST(req: NextRequest) {
       formData.append('document', pdfBlob, `${testTitle || 'ten'}-report.pdf`);
       formData.append(
         'caption',
-        `✨ Здравствуйте, ${profile?.name || 'друг'}!\n\nВаш персональный хологенетический профиль по исследованию «${testTitle || 'Тень'}» сформирован с помощью ИИ и готов в PDF.\n\nВнутри: Активация, Венера, Жемчужина и 4-недельная программа перехода Тени в Дар.`
+        `✨ Здравствуйте, ${profile?.name || 'друг'}!\n\nВаш персональный хологенетический профиль по исследованию «${testTitle || 'Генные Ключи'}» готов.\n\nИсследование завершено успешно.`
       );
 
       const apiRoot = (process.env.TELEGRAM_API_ROOT || 'https://api.telegram.org').replace(/\/+$/, '');
-      const tgResponse = await fetch(`${apiRoot}/bot${botToken}/sendDocument`, {
-        method: 'POST',
-        body: formData,
+      const sendDocumentUrl = `${apiRoot}/bot${botToken}/sendDocument`;
+
+      console.log('[Assessment Deliver] Sending PDF to Telegram', {
+        sendDocumentUrl,
+        fileName: `${testTitle || 'ten'}-report.pdf`,
       });
 
-      const tgResult = await tgResponse.json();
+      try {
+        const tgResponse = await fetch(sendDocumentUrl, {
+          method: 'POST',
+          body: formData,
+        });
 
-      if (!tgResponse.ok || !tgResult.ok) {
-        console.error('[Telegram API Error]:', tgResult);
+        const tgResult = await tgResponse.json();
+        console.log('[Assessment Deliver] Telegram response', {
+          status: tgResponse.status,
+          ok: tgResult?.ok,
+          description: tgResult?.description,
+          result: tgResult?.result ? 'present' : 'missing',
+        });
+
+        if (!tgResponse.ok || !tgResult.ok) {
+          console.error('[Assessment Deliver] Telegram API error details:', tgResult);
+          return NextResponse.json(
+            {
+              error:
+                tgResult.description ||
+                'Telegram отклонил отправку документа. Убедитесь, что бот запущен и чат открыт.',
+              stage: 'telegram_delivery',
+            },
+            { status: 502 }
+          );
+        }
+
+        return NextResponse.json({
+          success: true,
+          delivered: true,
+          chatId,
+          messageId: tgResult.result?.message_id,
+        });
+      } catch (tgErr) {
+        console.error('[Assessment Deliver] Telegram delivery exception', tgErr);
         return NextResponse.json(
           {
-            error:
-              tgResult.description ||
-              'Telegram отклонил отправку документа. Убедитесь, что бот запущен и чат открыт.',
+            error: tgErr instanceof Error ? tgErr.message : 'Не удалось отправить PDF в Telegram.',
+            stage: 'telegram_delivery_exception',
           },
           { status: 502 }
         );
       }
-
-      return NextResponse.json({
-        success: true,
-        delivered: true,
-        chatId,
-        messageId: tgResult.result?.message_id,
-      });
     }
 
-    // 4. If no bot token configured yet (local testing / dev mode), simulate success
     console.log(
       `[TELEGRAM BOT TEST MODE] AI PDF generated (${pdfBytes.length} bytes) for Chat ID: ${chatId}`
     );
@@ -107,7 +190,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Внутренняя ошибка сервера.';
-    console.error('[Assessment Deliver Error]:', error);
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('[Assessment Deliver] Unhandled route error:', error);
+    return NextResponse.json({ error: message, stage: 'route_unhandled' }, { status: 500 });
   }
 }
