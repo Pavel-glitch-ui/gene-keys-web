@@ -3,7 +3,11 @@ import fontkit from '@pdf-lib/fontkit';
 import fs from 'fs';
 import path from 'path';
 import type { GeneKeysAIAnalysis } from '../ai/generateGeneKeysAnalysis';
-import type { IkigaiAnalysisData } from '../ai/generateAnalysis';
+import type {
+  IkigaiAnalysisData,
+  ArchetypeAnalysisData,
+  NatalAnalysisData,
+} from '../ai/generateAnalysis';
 
 export interface GeneratePdfParams {
   testId?: string;
@@ -621,6 +625,1216 @@ async function renderIkigaiPages(
   }
 }
 
+async function renderArchetypePages(
+  doc: PDFDocument,
+  params: GeneratePdfParams,
+  data: ArchetypeAnalysisData,
+  fontBody: PDFFont,
+  fontBold: PDFFont,
+  logoImg: any
+) {
+  const W = 595.28;
+  const H = 841.89;
+
+  const black = rgb(0.04, 0.04, 0.04);
+  const pureBlack = rgb(0, 0, 0);
+  const white = rgb(1, 1, 1);
+  const zinc200 = rgb(0.85, 0.85, 0.87);
+  const zinc400 = rgb(0.60, 0.60, 0.64);
+  const zinc600 = rgb(0.35, 0.35, 0.38);
+  const purpleAccent = rgb(0.55, 0.30, 0.95);
+  const purpleBadge = rgb(0.18, 0.12, 0.28);
+  const amberAccent = rgb(0.92, 0.72, 0.40);
+  const cyanSoft = rgb(0.35, 0.82, 0.92);
+  const greenSoft = rgb(0.40, 0.88, 0.58);
+  const redSoft = rgb(0.95, 0.45, 0.55);
+
+  const card = data?.character_card || ({} as any);
+  const book = data?.book || ({} as any);
+  const sections = Array.isArray(book?.sections) ? book.sections : [];
+  const plan = Array.isArray(data?.plan_30_days) ? data.plan_30_days : [];
+
+  const drawPageHeader = (page: any, pageTitle: string, pageNum: number) => {
+    page.drawLine({
+      start: { x: 50, y: H - 45 },
+      end: { x: W - 50, y: H - 45 },
+      thickness: 0.75,
+      color: zinc600,
+    });
+    page.drawText('тень®  |  Персональный бренд', {
+      x: 50,
+      y: H - 38,
+      size: 8,
+      font: fontBold,
+      color: purpleAccent,
+    });
+    page.drawText(pageTitle, {
+      x: 230,
+      y: H - 38,
+      size: 8,
+      font: fontBody,
+      color: zinc400,
+    });
+    page.drawText(`Стр. ${pageNum}`, {
+      x: W - 80,
+      y: H - 38,
+      size: 8,
+      font: fontBody,
+      color: zinc400,
+    });
+  };
+
+  const drawPageFooter = (page: any) => {
+    page.drawLine({
+      start: { x: 50, y: 40 },
+      end: { x: W - 50, y: 40 },
+      thickness: 0.5,
+      color: zinc600,
+    });
+    page.drawText('Конфиденциально • Разбор подготовлен искусственным интеллектом пространства «Тень»', {
+      x: 50,
+      y: 28,
+      size: 7.5,
+      font: fontBody,
+      color: zinc600,
+    });
+  };
+
+  // =============================================================
+  // PAGE 1: COVER
+  // =============================================================
+  const page1 = doc.addPage([W, H]);
+  page1.drawRectangle({ x: 0, y: 0, width: W, height: H, color: pureBlack });
+
+  page1.drawRectangle({
+    x: 35,
+    y: 35,
+    width: W - 70,
+    height: H - 70,
+    borderWidth: 1,
+    borderColor: zinc600,
+    color: pureBlack,
+  });
+
+  if (logoImg) {
+    page1.drawImage(logoImg, { x: 60, y: H - 95, width: 32, height: 32 });
+    page1.drawImage(logoImg, { x: W - 170, y: 110, width: 95, height: 95 });
+  }
+
+  page1.drawText('тень®', {
+    x: logoImg ? 102 : 60,
+    y: H - 85,
+    size: 24,
+    font: fontBold,
+    color: white,
+  });
+
+  page1.drawText('П Р О С Т Р А Н С Т В О   Г Л У Б И Н Н О Й   Д И А Г Н О С Т И К И', {
+    x: logoImg ? 102 : 60,
+    y: H - 100,
+    size: 7,
+    font: fontBody,
+    color: purpleAccent,
+  });
+
+  page1.drawText(params.title || '12 Архетипов: Личный бренд', {
+    x: 60,
+    y: H - 160,
+    size: 23,
+    font: fontBold,
+    color: white,
+  });
+
+  page1.drawText('АРХЕТИПИЧЕСКИЙ ПОРТРЕТ И СТРАТЕГИЯ ПОЗИЦИОНИРОВАНИЯ', {
+    x: 60,
+    y: H - 188,
+    size: 9.5,
+    font: fontBold,
+    color: purpleAccent,
+  });
+
+  page1.drawText('Ролевая модель • Сильные и теневые стороны • Монетизация и план на 30 дней', {
+    x: 60,
+    y: H - 206,
+    size: 8.5,
+    font: fontBody,
+    color: zinc400,
+  });
+
+  // Archetype Badge Box
+  const archetypalBasis = card.archetypal_basis || 'Искатель / Творец';
+  const publicRole = card.public_role || 'Интегратор смыслов и первопроходец';
+  const mainMotive = card.main_motive || 'Поиск подлинности, свободы проявления и создание уникальных решений.';
+
+  const motiveLines = wrapText(`Мотив: ${mainMotive}`, 75);
+  const badgeH = Math.max(90, 50 + motiveLines.length * 14);
+  const badgeY = H - 230 - badgeH;
+
+  page1.drawRectangle({
+    x: 55,
+    y: badgeY,
+    width: W - 110,
+    height: badgeH,
+    color: purpleBadge,
+    borderWidth: 1,
+    borderColor: purpleAccent,
+  });
+
+  page1.drawText('ВЕДУЩИЙ АРХЕТИПИЧЕСКИЙ БАЗИС:', {
+    x: 70,
+    y: badgeY + badgeH - 20,
+    size: 8.5,
+    font: fontBold,
+    color: amberAccent,
+  });
+
+  page1.drawText(archetypalBasis, {
+    x: 70,
+    y: badgeY + badgeH - 36,
+    size: 13,
+    font: fontBold,
+    color: white,
+  });
+
+  page1.drawText(`Публичная роль: ${publicRole}`, {
+    x: 70,
+    y: badgeY + badgeH - 52,
+    size: 9,
+    font: fontBold,
+    color: cyanSoft,
+  });
+
+  let curMY = badgeY + badgeH - 68;
+  for (const ml of motiveLines) {
+    page1.drawText(ml, {
+      x: 70,
+      y: curMY,
+      size: 8.5,
+      font: fontBody,
+      color: zinc200,
+    });
+    curMY -= 13;
+  }
+
+  // Scores and Domains Bar Chart (if provided)
+  let yScores = badgeY - 26;
+  const doms = (params.domains && params.domains.length > 0)
+    ? params.domains.slice(0, 4)
+    : [
+        { label: 'Творчество и замысел' },
+        { label: 'Порядок и структура' },
+        { label: 'Свобода и исследование' },
+        { label: 'Влияние и масштаб' },
+      ];
+  const scores = (params.scores && params.scores.length > 0)
+    ? params.scores.slice(0, 4)
+    : [85, 70, 90, 65];
+
+  page1.drawText('БАЛАНС РОЛЕВЫХ ВЕКТОРОВ И АРХЕТИПОВ:', {
+    x: 60,
+    y: yScores,
+    size: 9,
+    font: fontBold,
+    color: white,
+  });
+  yScores -= 18;
+
+  for (let i = 0; i < doms.length; i++) {
+    const d = doms[i];
+    const s = Math.round(scores[i] ?? 50);
+    page1.drawText(d.label, {
+      x: 60,
+      y: yScores,
+      size: 8.5,
+      font: fontBody,
+      color: zinc200,
+    });
+
+    const barX = 240;
+    const maxBarW = 220;
+    page1.drawRectangle({
+      x: barX,
+      y: yScores - 2,
+      width: maxBarW,
+      height: 7,
+      color: rgb(0.16, 0.16, 0.20),
+    });
+
+    const curW = Math.max(4, Math.min(maxBarW, (s / 100) * maxBarW));
+    const barColor = i === 0 ? purpleAccent : i === 1 ? cyanSoft : i === 2 ? amberAccent : greenSoft;
+    page1.drawRectangle({
+      x: barX,
+      y: yScores - 2,
+      width: curW,
+      height: 7,
+      color: barColor,
+    });
+
+    page1.drawText(`${s}%`, {
+      x: barX + maxBarW + 10,
+      y: yScores,
+      size: 8.5,
+      font: fontBold,
+      color: white,
+    });
+
+    yScores -= 17;
+  }
+
+  // Meta block
+  page1.drawText('ИССЛЕДОВАНИЕ ПОДГОТОВЛЕНО ДЛЯ:', {
+    x: 60,
+    y: 195,
+    size: 8,
+    font: fontBold,
+    color: zinc400,
+  });
+
+  page1.drawText(params.name || 'Исследователь', {
+    x: 60,
+    y: 168,
+    size: 20,
+    font: fontBold,
+    color: white,
+  });
+
+  page1.drawText(`Фокус внимания: ${params.focus || 'Личный бренд'}`, {
+    x: 60,
+    y: 146,
+    size: 9,
+    font: fontBody,
+    color: zinc200,
+  });
+
+  page1.drawText(`Дата формирования: ${params.date}`, {
+    x: 60,
+    y: 128,
+    size: 8.5,
+    font: fontBody,
+    color: zinc400,
+  });
+
+  page1.drawText('Пространство самопознания «Тень» • Конфиденциальный разбор', {
+    x: 60,
+    y: 55,
+    size: 7.5,
+    font: fontBody,
+    color: zinc600,
+  });
+
+  // =============================================================
+  // PAGE 2: КАРТА ХАРАКТЕРА И ПРОТИВОРЕЧИЯ
+  // =============================================================
+  const page2 = doc.addPage([W, H]);
+  page2.drawRectangle({ x: 0, y: 0, width: W, height: H, color: black });
+  drawPageHeader(page2, '1. Карта характера и противоречия', 2);
+  drawPageFooter(page2);
+
+  page2.drawText('Карта характера и глубинная архитектура', {
+    x: 50,
+    y: H - 80,
+    size: 18,
+    font: fontBold,
+    color: white,
+  });
+
+  page2.drawText('Подтвержденные ресурсы, точки внутреннего сопротивления и теневой риск', {
+    x: 50,
+    y: H - 98,
+    size: 9.5,
+    font: fontBody,
+    color: purpleAccent,
+  });
+
+  let yP2 = H - 128;
+
+  const charCards = [
+    {
+      title: '1. ПОДТВЕРЖДЕННАЯ СИЛЬНАЯ СТОРОНА (ОПОРА)',
+      text: card.strength || 'Способность структурировать сложные хаотичные вводные и доводить идеи до осязаемого результата.',
+      detail: sections.find((s: any) => s.id === 4)?.body || sections.find((s: any) => s.id === 1)?.body || 'Глубокий анализ, системность, точность и создание практических ориентиров.',
+      accent: greenSoft,
+    },
+    {
+      title: '2. ВНУТРЕННИЙ КОНФЛИКТ И ПРОТИВОРЕЧИЕ',
+      text: card.contradiction || 'Стремление к абсолютной независимости против потребности в признании и надежной поддержке.',
+      detail: sections.find((s: any) => s.id === 2)?.body || 'Желание полной творческой свободы может приводить к откладыванию рутинных действий по продвижению.',
+      accent: amberAccent,
+    },
+    {
+      title: '3. ТЕНЕВАЯ ЦЕНА СТРАТЕГИИ И ЛОВУШКИ',
+      text: card.shadow_risk || 'Риск перфекционизма и обесценивания промежуточных шагов до момента публичного релиза.',
+      detail: sections.find((s: any) => s.id === 5)?.body || 'Склонность к интеллектуализации вместо прямого контакта с аудиторией и сбора быстрой обратной связи.',
+      accent: redSoft,
+    },
+    {
+      title: '4. ФИРМЕННЫЙ ГОЛОС И УЗНАВАЕМЫЙ ЯЗЫК',
+      text: card.signature_expression ? `Фирменное выражение: ${card.signature_expression}` : 'Спокойная уверенность, аргументированность и отсутствие пустых лозунгов.',
+      detail: sections.find((s: any) => s.id === 6)?.body || 'Тональность уважительного диалога, ясные формулировки и опора на практический опыт.',
+      accent: cyanSoft,
+    },
+  ];
+
+  for (const c of charCards) {
+    page2.drawText(c.title, {
+      x: 50,
+      y: yP2,
+      size: 9.5,
+      font: fontBold,
+      color: c.accent,
+    });
+    yP2 -= 14;
+
+    const tLines = wrapText(c.text, 85);
+    for (const tl of tLines) {
+      page2.drawText(tl, { x: 55, y: yP2, size: 8.5, font: fontBold, color: white });
+      yP2 -= 12;
+    }
+    yP2 -= 3;
+
+    const dLines = wrapText(c.detail, 85);
+    for (const dl of dLines) {
+      page2.drawText(dl, { x: 55, y: yP2, size: 8, font: fontBody, color: zinc400 });
+      yP2 -= 11.5;
+    }
+    yP2 -= 12;
+  }
+
+  // =============================================================
+  // PAGE 3: ПОЗИЦИОНИРОВАНИЕ И МОНЕТИЗАЦИЯ
+  // =============================================================
+  const page3 = doc.addPage([W, H]);
+  page3.drawRectangle({ x: 0, y: 0, width: W, height: H, color: black });
+  drawPageHeader(page3, '2. Позиционирование и монетизация', 3);
+  drawPageFooter(page3);
+
+  page3.drawText('Публичное позиционирование и Модели заработка', {
+    x: 50,
+    y: H - 80,
+    size: 18,
+    font: fontBold,
+    color: white,
+  });
+
+  page3.drawText('Стратегия проявления, ценность для клиентов и проверка гипотез', {
+    x: 50,
+    y: H - 98,
+    size: 9.5,
+    font: fontBody,
+    color: purpleAccent,
+  });
+
+  let yP3 = H - 128;
+
+  const posBlocks = [
+    {
+      title: 'ПУБЛИЧНАЯ РОЛЬ И ПОЗИЦИЯ НА РЫНКЕ:',
+      text: sections.find((s: any) => s.id === 3)?.body || `Аудитория воспринимает вас в роли «${publicRole}». Вы выступаете проводником к конкретному результату и ясности, помогая находить решения без лишней драмы.`,
+      color: cyanSoft,
+    },
+    {
+      title: 'ЦЕННОСТЬ ДЛЯ АУДИТОРИИ И КЛЮЧЕВЫЕ ТЕМЫ:',
+      text: sections.find((s: any) => s.id === 8)?.body || sections.find((s: any) => s.id === 7)?.body || 'Темы экспертного мастерства, структурирования процессов и создания устойчивой опоры в ситуациях неопределенности.',
+      color: amberAccent,
+    },
+    {
+      title: 'МОДЕЛИ МОНЕТИЗАЦИИ И ПРЕДЛОЖЕНИЯ:',
+      text: card.monetization_hypothesis
+        ? `Основная модель: ${card.monetization_hypothesis}\n${sections.find((s: any) => s.id === 9)?.body || ''}`
+        : sections.find((s: any) => s.id === 9)?.body || 'Упаковка авторской методики в точечные экспертные продукты, консультации с гарантией фокуса и долгосрочное сопровождение.',
+      color: greenSoft,
+    },
+    {
+      title: 'ПЕРВОЕ КОНКРЕТНОЕ ДЕЙСТВИЕ И ПРОВЕРКА В РЕАЛЬНОСТИ:',
+      text: card.first_action
+        ? `Первый шаг: ${card.first_action}\n${sections.find((s: any) => s.id === 10)?.body || ''}`
+        : sections.find((s: any) => s.id === 10)?.body || 'Сформулировать одно емкое предложение ценности и протестировать его на 3-5 потенциальных клиентах.',
+      color: purpleAccent,
+    },
+  ];
+
+  for (const b of posBlocks) {
+    page3.drawText(b.title, {
+      x: 50,
+      y: yP3,
+      size: 9.5,
+      font: fontBold,
+      color: b.color,
+    });
+    yP3 -= 14;
+
+    const bLines = wrapText(b.text.replace(/\n+/g, ' '), 85);
+    for (const bl of bLines) {
+      page3.drawText(bl, { x: 55, y: yP3, size: 8.2, font: fontBody, color: zinc200 });
+      yP3 -= 11.8;
+    }
+    yP3 -= 12;
+  }
+
+  // =============================================================
+  // PAGE 4: ПЛАН ДЕЙСТВИЙ НА 30 ДНЕЙ И МАНИФЕСТ
+  // =============================================================
+  const page4 = doc.addPage([W, H]);
+  page4.drawRectangle({ x: 0, y: 0, width: W, height: H, color: black });
+  drawPageHeader(page4, '3. План действий на 30 дней', 4);
+  drawPageFooter(page4);
+
+  page4.drawText('Пошаговый план действий на 30 дней', {
+    x: 50,
+    y: H - 80,
+    size: 18,
+    font: fontBold,
+    color: white,
+  });
+
+  page4.drawText('Четкий понедельный ритм: от формулировки роли к измеримому отклику', {
+    x: 50,
+    y: H - 98,
+    size: 9.5,
+    font: fontBody,
+    color: purpleAccent,
+  });
+
+  let yP4 = H - 128;
+  page4.drawText('ПОНЕДЕЛЬНАЯ ПРОГРАММА ПРОЯВЛЕНИЯ:', {
+    x: 50,
+    y: yP4,
+    size: 9.5,
+    font: fontBold,
+    color: white,
+  });
+  yP4 -= 18;
+
+  const planWeeks = (plan && plan.length > 0)
+    ? plan
+    : [
+        { week: 1, action: 'Сформулируйте ключевое позиционирование и роль в 3 предложениях.', deliverable: 'Манифест позиционирования.', indicator: 'Ясность формулировки.' },
+        { week: 2, action: 'Опубликуйте экспертный материал из состояния ведущего архетипа.', deliverable: 'Публикация / статья.', indicator: 'Живой отклик аудитории.' },
+        { week: 3, action: 'Протестируйте пилотное предложение среди лояльного круга.', deliverable: 'Карточка предложения.', indicator: 'Первые заявки и вопросы.' },
+        { week: 4, action: 'Подведите итоги месяца и закрепите регулярный ритм публикаций.', deliverable: 'Календарь на квартал.', indicator: 'Устойчивость процесса.' },
+      ];
+
+  for (const w of planWeeks) {
+    page4.drawText(`НЕДЕЛЯ ${w.week}: ПРОЯВЛЕНИЕ И ДЕЙСТВИЕ`, {
+      x: 55,
+      y: yP4,
+      size: 9,
+      font: fontBold,
+      color: amberAccent,
+    });
+    yP4 -= 14;
+
+    page4.drawText('Действие:', { x: 65, y: yP4, size: 8, font: fontBold, color: purpleAccent });
+    yP4 -= 12;
+
+    const actLines = wrapText(w.action || '', 82);
+    for (const al of actLines) {
+      page4.drawText(al, { x: 75, y: yP4, size: 8, font: fontBody, color: zinc200 });
+      yP4 -= 11.5;
+    }
+
+    if (w.deliverable) {
+      page4.drawText('Ожидаемый артефакт:', { x: 65, y: yP4, size: 8, font: fontBold, color: cyanSoft });
+      yP4 -= 12;
+      const delLines = wrapText(w.deliverable, 82);
+      for (const dl of delLines) {
+        page4.drawText(dl, { x: 75, y: yP4, size: 8, font: fontBody, color: zinc400 });
+        yP4 -= 11.5;
+      }
+    }
+
+    if (w.indicator) {
+      page4.drawText('Индикатор успеха:', { x: 65, y: yP4, size: 8, font: fontBold, color: greenSoft });
+      yP4 -= 12;
+      const indLines = wrapText(w.indicator, 82);
+      for (const il of indLines) {
+        page4.drawText(il, { x: 75, y: yP4, size: 8, font: fontBody, color: zinc400 });
+        yP4 -= 11.5;
+      }
+    }
+
+    yP4 -= 8;
+  }
+
+  // Bottom Box: Manifest
+  const manifest = sections.find((s: any) => s.id === 12)?.body || sections.find((s: any) => s.id === 11)?.body || 'Ваша сила — в аутентичности и смелости проявляться без подражания чужим шаблонам. Действуйте ритмично, опирайтесь на подтвержденное мастерство и доверяйте собственному пути.';
+  page4.drawText('ИТОГОВЫЙ МАНИФЕСТ БРЕНДА:', {
+    x: 50,
+    y: yP4,
+    size: 9.5,
+    font: fontBold,
+    color: purpleAccent,
+  });
+  yP4 -= 15;
+
+  const manLines = wrapText(manifest, 85);
+  for (const ml of manLines.slice(0, 5)) {
+    page4.drawText(ml, { x: 55, y: yP4, size: 8, font: fontBody, color: white });
+    yP4 -= 11.5;
+  }
+}
+
+async function renderNatalPages(
+  doc: PDFDocument,
+  params: GeneratePdfParams,
+  data: NatalAnalysisData,
+  fontBody: PDFFont,
+  fontBold: PDFFont,
+  logoImg: any
+) {
+  const W = 595.28;
+  const H = 841.89;
+
+  const black = rgb(0.04, 0.04, 0.04);
+  const pureBlack = rgb(0, 0, 0);
+  const white = rgb(1, 1, 1);
+  const zinc200 = rgb(0.85, 0.85, 0.87);
+  const zinc400 = rgb(0.60, 0.60, 0.64);
+  const zinc600 = rgb(0.35, 0.35, 0.38);
+  const purpleAccent = rgb(0.55, 0.30, 0.95);
+  const purpleBadge = rgb(0.18, 0.12, 0.28);
+  const amberAccent = rgb(0.92, 0.72, 0.40);
+  const cyanSoft = rgb(0.35, 0.82, 0.92);
+  const greenSoft = rgb(0.40, 0.88, 0.58);
+  const redSoft = rgb(0.95, 0.45, 0.55);
+
+  const overview = data?.natal_overview || ({} as any);
+  const bigThree = data?.big_three || ({} as any);
+  const dynamics = data?.planetary_dynamics || ({} as any);
+  const aspects = Array.isArray(data?.key_aspect_tensions) ? data.key_aspect_tensions : [];
+  const domains = data?.life_domains || ({} as any);
+  const practices = Array.isArray(data?.integration_practices) ? data.integration_practices : [];
+
+  const drawPageHeader = (page: any, pageTitle: string, pageNum: number) => {
+    page.drawLine({
+      start: { x: 50, y: H - 45 },
+      end: { x: W - 50, y: H - 45 },
+      thickness: 0.75,
+      color: zinc600,
+    });
+    page.drawText('тень®  |  Натальная карта', {
+      x: 50,
+      y: H - 38,
+      size: 8,
+      font: fontBold,
+      color: purpleAccent,
+    });
+    page.drawText(pageTitle, {
+      x: 230,
+      y: H - 38,
+      size: 8,
+      font: fontBody,
+      color: zinc400,
+    });
+    page.drawText(`Стр. ${pageNum}`, {
+      x: W - 80,
+      y: H - 38,
+      size: 8,
+      font: fontBody,
+      color: zinc400,
+    });
+  };
+
+  const drawPageFooter = (page: any) => {
+    page.drawLine({
+      start: { x: 50, y: 40 },
+      end: { x: W - 50, y: 40 },
+      thickness: 0.5,
+      color: zinc600,
+    });
+    page.drawText('Конфиденциально • Разбор подготовлен искусственным интеллектом пространства «Тень»', {
+      x: 50,
+      y: 28,
+      size: 7.5,
+      font: fontBody,
+      color: zinc600,
+    });
+  };
+
+  // =============================================================
+  // PAGE 1: COVER
+  // =============================================================
+  const page1 = doc.addPage([W, H]);
+  page1.drawRectangle({ x: 0, y: 0, width: W, height: H, color: pureBlack });
+
+  page1.drawRectangle({
+    x: 35,
+    y: 35,
+    width: W - 70,
+    height: H - 70,
+    borderWidth: 1,
+    borderColor: zinc600,
+    color: pureBlack,
+  });
+
+  if (logoImg) {
+    page1.drawImage(logoImg, { x: 60, y: H - 95, width: 32, height: 32 });
+    page1.drawImage(logoImg, { x: W - 170, y: 110, width: 95, height: 95 });
+  }
+
+  page1.drawText('тень®', {
+    x: logoImg ? 102 : 60,
+    y: H - 85,
+    size: 24,
+    font: fontBold,
+    color: white,
+  });
+
+  page1.drawText('П Р О С Т Р А Н С Т В О   Г Л У Б И Н Н О Й   Д И А Г Н О С Т И К И', {
+    x: logoImg ? 102 : 60,
+    y: H - 100,
+    size: 7,
+    font: fontBody,
+    color: purpleAccent,
+  });
+
+  page1.drawText(params.title || 'Натальная карта: Архитектура личности', {
+    x: 60,
+    y: H - 160,
+    size: 22,
+    font: fontBold,
+    color: white,
+  });
+
+  page1.drawText('ПСИХОЛОГИЧЕСКИЙ ЧЕРТЕЖ ЛИЧНОСТИ · СИМВОЛИЧЕСКИЙ АНАЛИЗ', {
+    x: 60,
+    y: H - 188,
+    size: 9.5,
+    font: fontBold,
+    color: purpleAccent,
+  });
+
+  page1.drawText('Большая Тройка • Планетарная динамика • Точки роста и практики интеграции', {
+    x: 60,
+    y: H - 206,
+    size: 8.5,
+    font: fontBody,
+    color: zinc400,
+  });
+
+  // Motto Box
+  const motto = overview.core_motto || 'Синтез воли, интуиции и точного практического действия.';
+  const mottoLines = wrapText(motto, 75);
+  const badgeH = Math.max(68, 30 + mottoLines.length * 15);
+  const badgeY = H - 230 - badgeH;
+
+  page1.drawRectangle({
+    x: 55,
+    y: badgeY,
+    width: W - 110,
+    height: badgeH,
+    color: purpleBadge,
+    borderWidth: 1,
+    borderColor: purpleAccent,
+  });
+
+  page1.drawText('КЛЮЧЕВОЙ ДЕВИЗ НАТАЛЬНОГО ПОТЕНЦИАЛА:', {
+    x: 70,
+    y: badgeY + badgeH - 18,
+    size: 8.5,
+    font: fontBold,
+    color: amberAccent,
+  });
+
+  let curMY = badgeY + badgeH - 34;
+  for (const ml of mottoLines) {
+    page1.drawText(ml, {
+      x: 70,
+      y: curMY,
+      size: 9.5,
+      font: fontBold,
+      color: white,
+    });
+    curMY -= 14;
+  }
+
+  // Synthesis on cover
+  let ySynth = badgeY - 24;
+  page1.drawText('СИНТЕЗ НАТАЛЬНОЙ АРХИТЕКТУРЫ:', {
+    x: 60,
+    y: ySynth,
+    size: 9,
+    font: fontBold,
+    color: cyanSoft,
+  });
+  ySynth -= 16;
+
+  const synthLines = wrapText(overview.synthesis || `Для ${params.name || 'исследователя'} натальная архитектура отражает сочетание глубокого творческого потенциала и стремления к структурной ясности.`, 80);
+  for (const sl of synthLines.slice(0, 4)) {
+    page1.drawText(sl, {
+      x: 60,
+      y: ySynth,
+      size: 8.5,
+      font: fontBody,
+      color: zinc200,
+    });
+    ySynth -= 13;
+  }
+
+  // Scores chart (if test domains provided)
+  let yScores = ySynth - 16;
+  const doms = (params.domains && params.domains.length > 0)
+    ? params.domains.slice(0, 4)
+    : [
+        { label: 'Самовыражение' },
+        { label: 'Эмоциональные опоры' },
+        { label: 'Мышление и общение' },
+        { label: 'Действие и границы' },
+      ];
+  const scores = (params.scores && params.scores.length > 0)
+    ? params.scores.slice(0, 4)
+    : [80, 65, 85, 70];
+
+  page1.drawText('ОЦЕНКА ОПОР ПО СФЕРАМ ЖИЗНИ:', {
+    x: 60,
+    y: yScores,
+    size: 8.5,
+    font: fontBold,
+    color: white,
+  });
+  yScores -= 16;
+
+  for (let i = 0; i < doms.length; i++) {
+    const d = doms[i];
+    const s = Math.round(scores[i] ?? 50);
+    page1.drawText(d.label, {
+      x: 60,
+      y: yScores,
+      size: 8,
+      font: fontBody,
+      color: zinc200,
+    });
+
+    const barX = 240;
+    const maxBarW = 220;
+    page1.drawRectangle({
+      x: barX,
+      y: yScores - 2,
+      width: maxBarW,
+      height: 6.5,
+      color: rgb(0.16, 0.16, 0.20),
+    });
+
+    const curW = Math.max(4, Math.min(maxBarW, (s / 100) * maxBarW));
+    const barColor = i === 0 ? amberAccent : i === 1 ? cyanSoft : i === 2 ? purpleAccent : greenSoft;
+    page1.drawRectangle({
+      x: barX,
+      y: yScores - 2,
+      width: curW,
+      height: 6.5,
+      color: barColor,
+    });
+
+    page1.drawText(`${s}%`, {
+      x: barX + maxBarW + 10,
+      y: yScores,
+      size: 8,
+      font: fontBold,
+      color: white,
+    });
+
+    yScores -= 15;
+  }
+
+  // Meta block
+  page1.drawText('ИССЛЕДОВАНИЕ ПОДГОТОВЛЕНО ДЛЯ:', {
+    x: 60,
+    y: 195,
+    size: 8,
+    font: fontBold,
+    color: zinc400,
+  });
+
+  page1.drawText(params.name || 'Исследователь', {
+    x: 60,
+    y: 168,
+    size: 20,
+    font: fontBold,
+    color: white,
+  });
+
+  page1.drawText(`Фокус внимания: ${params.focus || 'Архитектура личности'}`, {
+    x: 60,
+    y: 146,
+    size: 9,
+    font: fontBody,
+    color: zinc200,
+  });
+
+  page1.drawText(`Дата формирования: ${params.date}`, {
+    x: 60,
+    y: 128,
+    size: 8.5,
+    font: fontBody,
+    color: zinc400,
+  });
+
+  page1.drawText('Пространство самопознания «Тень» • Конфиденциальный разбор', {
+    x: 60,
+    y: 55,
+    size: 7.5,
+    font: fontBody,
+    color: zinc600,
+  });
+
+  // =============================================================
+  // PAGE 2: БОЛЬШАЯ ТРОЙКА
+  // =============================================================
+  const page2 = doc.addPage([W, H]);
+  page2.drawRectangle({ x: 0, y: 0, width: W, height: H, color: black });
+  drawPageHeader(page2, '1. Большая Тройка: Фундамент', 2);
+  drawPageFooter(page2);
+
+  page2.drawText('Большая Тройка: Психологический фундамент', {
+    x: 50,
+    y: H - 80,
+    size: 18,
+    font: fontBold,
+    color: white,
+  });
+
+  page2.drawText('Осознанная воля (Солнце), эмоциональный ресурс (Луна) и социальный контакт (Асцендент)', {
+    x: 50,
+    y: H - 98,
+    size: 9.5,
+    font: fontBody,
+    color: purpleAccent,
+  });
+
+  let yP2 = H - 128;
+
+  const sunInfo = bigThree?.sun || ({} as any);
+  const moonInfo = bigThree?.moon || ({} as any);
+  const ascInfo = bigThree?.ascendant || ({} as any);
+
+  const threeBlocks = [
+    {
+      role: 'СОЛНЦЕ',
+      sign: sunInfo.sign || 'Овен',
+      extra: sunInfo.house ? `Дом ${sunInfo.house}` : sunInfo.degree || '',
+      subtitle: 'Осознанное «Я», источник жизненной энергии, воля и авторство жизни',
+      essence: sunInfo.essence || 'Способность брать ответственность за собственную жизнь, проявлять инициативу и следовать аутентичным целям без оглядки на внешнее одобрение.',
+      color: amberAccent,
+    },
+    {
+      role: 'ЛУНА',
+      sign: moonInfo.sign || 'Телец',
+      extra: moonInfo.house ? `Дом ${moonInfo.house}` : moonInfo.degree || '',
+      subtitle: 'Бессознательные потребности, эмоции, безопасность и восстановление',
+      essence: moonInfo.essence || 'Потребность в предсказуемости, заземлении и телесном комфорте. Эмоциональное равновесие восстанавливается через размеренный ритм и паузы в тишине.',
+      color: cyanSoft,
+    },
+    {
+      role: 'АСЦЕНДЕНТ',
+      sign: ascInfo.sign || 'Близнецы',
+      extra: ascInfo.degree || '',
+      subtitle: 'Социальный фасад, первое впечатление и маска контакта с миром',
+      essence: ascInfo.essence || 'Любознательность, легкость первого контакта, умение быстро считывать контекст и находить общий язык с разными собеседниками.',
+      color: purpleAccent,
+    },
+  ];
+
+  for (const b of threeBlocks) {
+    const title = `${b.role}: ЗНАК ${b.sign.toUpperCase()}${b.extra ? ` · ${b.extra}` : ''}`;
+    page2.drawText(title, {
+      x: 50,
+      y: yP2,
+      size: 10,
+      font: fontBold,
+      color: b.color,
+    });
+    yP2 -= 14;
+
+    page2.drawText(b.subtitle, {
+      x: 55,
+      y: yP2,
+      size: 8,
+      font: fontBold,
+      color: white,
+    });
+    yP2 -= 13;
+
+    const essLines = wrapText(b.essence, 85);
+    for (const el of essLines) {
+      page2.drawText(el, { x: 55, y: yP2, size: 8, font: fontBody, color: zinc200 });
+      yP2 -= 11.5;
+    }
+    yP2 -= 14;
+  }
+
+  // Synthesis Box on Page 2
+  yP2 -= 6;
+  page2.drawText('ПСИХОЛОГИЧЕСКИЙ СИНТЕЗ ЯДРА ЛИЧНОСТИ:', {
+    x: 50,
+    y: yP2,
+    size: 9.5,
+    font: fontBold,
+    color: greenSoft,
+  });
+  yP2 -= 16;
+
+  const coreSynthesis = 'Устойчивость личности формируется через согласование всех трех опор: осознанные амбиции (Солнце) реализуются через гибкий социальный контакт (Асцендент), не нарушая при этом базовую потребность в безопасности и восстановлении ресурса (Луна).';
+  const csLines = wrapText(coreSynthesis, 85);
+  for (const csl of csLines) {
+    page2.drawText(csl, { x: 55, y: yP2, size: 8.2, font: fontBody, color: zinc400 });
+    yP2 -= 12;
+  }
+
+  // =============================================================
+  // PAGE 3: ПЛАНЕТАРНАЯ ДИНАМИКА И АСПЕКТЫ
+  // =============================================================
+  const page3 = doc.addPage([W, H]);
+  page3.drawRectangle({ x: 0, y: 0, width: W, height: H, color: black });
+  drawPageHeader(page3, '2. Планетарная динамика и аспекты', 3);
+  drawPageFooter(page3);
+
+  page3.drawText('Планетарная динамика и Точки напряжения', {
+    x: 50,
+    y: H - 80,
+    size: 18,
+    font: fontBold,
+    color: white,
+  });
+
+  page3.drawText('Функциональные векторы мышления, ценностей, воли и аспекты-вызовы', {
+    x: 50,
+    y: H - 98,
+    size: 9.5,
+    font: fontBody,
+    color: purpleAccent,
+  });
+
+  let yP3 = H - 128;
+
+  page3.drawText('ФУНКЦИОНАЛЬНЫЕ ПЛАНЕТАРНЫЕ ВЕКТОРЫ:', {
+    x: 50,
+    y: yP3,
+    size: 9.5,
+    font: fontBold,
+    color: white,
+  });
+  yP3 -= 16;
+
+  const dynItems = [
+    { label: 'Мышление и голос (Меркурий):', text: dynamics?.mind_and_voice?.insight || 'Структурный ясный ум, умение раскладывать сложное на понятные составляющие.', col: cyanSoft },
+    { label: 'Желания и ценности (Венера):', text: dynamics?.desires_and_values?.insight || 'Высокие стандарты качества, ценность эстетики, гармонии и взаимного уважения.', col: amberAccent },
+    { label: 'Действие и напор (Марс):', text: dynamics?.drive_and_will?.insight || 'Направленная энергия и решительность при наличии ясного смысла задачи.', col: redSoft },
+    { label: 'Масштаб и границы (Юпитер / Сатурн):', text: dynamics?.growth_and_boundaries?.insight || 'Баланс широкого видения перспектив и требовательной внутренней дисциплины.', col: greenSoft },
+  ];
+
+  for (const di of dynItems) {
+    page3.drawText(`• ${di.label}`, {
+      x: 55,
+      y: yP3,
+      size: 8.5,
+      font: fontBold,
+      color: di.col,
+    });
+    yP3 -= 13;
+
+    const dLines = wrapText(di.text, 85);
+    for (const dl of dLines) {
+      page3.drawText(dl, { x: 65, y: yP3, size: 8, font: fontBody, color: zinc200 });
+      yP3 -= 11.5;
+    }
+    yP3 -= 5;
+  }
+
+  yP3 -= 10;
+  page3.drawText('КЛЮЧЕВЫЕ ТОЧКИ НАПРЯЖЕНИЯ И АСПЕКТЫ РОСТА:', {
+    x: 50,
+    y: yP3,
+    size: 9.5,
+    font: fontBold,
+    color: amberAccent,
+  });
+  yP3 -= 16;
+
+  const aspList = (aspects && aspects.length > 0)
+    ? aspects.slice(0, 2)
+    : [
+        {
+          aspect: 'Внутренний баланс воли и эмоционального покоя',
+          orb: 1.8,
+          psychological_tension: 'Конфликт между желанием интенсивных свершений и потребностью в безопасной паузе.',
+          integration_step: 'Не принуждать себя к действию из чувства вины; планировать отдых как часть стратегии.',
+        },
+      ];
+
+  for (const asp of aspList) {
+    const aspTitle = `${asp.aspect || 'Аспект'}${asp.orb ? ` (орбис ${asp.orb}°)` : ''}`;
+    page3.drawText(`— ${aspTitle}`, {
+      x: 55,
+      y: yP3,
+      size: 9,
+      font: fontBold,
+      color: purpleAccent,
+    });
+    yP3 -= 13;
+
+    page3.drawText('Психологическое напряжение:', { x: 65, y: yP3, size: 7.8, font: fontBold, color: white });
+    yP3 -= 11.5;
+    const ptLines = wrapText(asp.psychological_tension || '', 82);
+    for (const ptl of ptLines) {
+      page3.drawText(ptl, { x: 75, y: yP3, size: 7.8, font: fontBody, color: zinc200 });
+      yP3 -= 11;
+    }
+
+    page3.drawText('Шаг интеграции:', { x: 65, y: yP3, size: 7.8, font: fontBold, color: cyanSoft });
+    yP3 -= 11.5;
+    const isLines = wrapText(asp.integration_step || '', 82);
+    for (const isl of isLines) {
+      page3.drawText(isl, { x: 75, y: yP3, size: 7.8, font: fontBody, color: zinc400 });
+      yP3 -= 11;
+    }
+    yP3 -= 8;
+  }
+
+  // =============================================================
+  // PAGE 4: СФЕРЫ ЖИЗНИ И ПРАКТИКИ
+  // =============================================================
+  const page4 = doc.addPage([W, H]);
+  page4.drawRectangle({ x: 0, y: 0, width: W, height: H, color: black });
+  drawPageHeader(page4, '3. Сферы жизни и практики', 4);
+  drawPageFooter(page4);
+
+  page4.drawText('Сферы реализации и Повседневные практики', {
+    x: 50,
+    y: H - 80,
+    size: 18,
+    font: fontBold,
+    color: white,
+  });
+
+  page4.drawText('Призвание, партнерство, ресурсы и заземление символических паттернов', {
+    x: 50,
+    y: H - 98,
+    size: 9.5,
+    font: fontBody,
+    color: purpleAccent,
+  });
+
+  let yP4 = H - 128;
+
+  page4.drawText('КЛЮЧЕВЫЕ СФЕРЫ СОЦИАЛЬНОЙ РЕАЛИЗАЦИИ:', {
+    x: 50,
+    y: yP4,
+    size: 9.5,
+    font: fontBold,
+    color: white,
+  });
+  yP4 -= 16;
+
+  const domBlocks = [
+    {
+      title: 'СОЦИАЛЬНАЯ РЕАЛИЗАЦИЯ И MC (10 ДОМ):',
+      text: domains?.vocation_and_mc || 'Публичное признание через авторские проекты, структурное лидерство и создание осязаемой ценности для людей.',
+      color: cyanSoft,
+    },
+    {
+      title: 'ОТНОШЕНИЯ И ПАРТНЕРСТВО (7 ДОМ):',
+      text: domains?.relationships || 'Равноправный союз, построенный на взаимном уважении к личным границам и свободе каждого.',
+      color: amberAccent,
+    },
+    {
+      title: 'ЛИЧНЫЕ РЕСУРСЫ И САМОЦЕННОСТЬ (2 ДОМ):',
+      text: domains?.resources || 'Материальная стабильность как результат устойчивой самооценки и признания ценности своего мастерства.',
+      color: greenSoft,
+    },
+  ];
+
+  for (const db of domBlocks) {
+    page4.drawText(db.title, {
+      x: 55,
+      y: yP4,
+      size: 8.5,
+      font: fontBold,
+      color: db.color,
+    });
+    yP4 -= 13;
+
+    const tLines = wrapText(db.text, 85);
+    for (const tl of tLines) {
+      page4.drawText(tl, { x: 65, y: yP4, size: 8, font: fontBody, color: zinc200 });
+      yP4 -= 11.5;
+    }
+    yP4 -= 8;
+  }
+
+  yP4 -= 6;
+  page4.drawText('ПРАКТИКИ ИНТЕГРАЦИИ И САМОРЕФЛЕКСИИ:', {
+    x: 50,
+    y: yP4,
+    size: 9.5,
+    font: fontBold,
+    color: purpleAccent,
+  });
+  yP4 -= 16;
+
+  const pracList = (practices && practices.length > 0)
+    ? practices.slice(0, 2)
+    : [
+        {
+          area: 'Осознанное проявление',
+          recommendation: 'Начинайте утро с 10 минут тишины без гаджетов для настройки на внутреннее состояние.',
+          reflection_question: 'В какой задаче сегодня важнее проявить смелость, а в какой — терпение?',
+        },
+        {
+          area: 'Эмоциональный ресурс',
+          recommendation: 'Регулярная физическая активность и контакт с телом для снятия ментального перенапряжения.',
+          reflection_question: 'Что сейчас дает наибольшее ощущение спокойствия и опоры?',
+        },
+      ];
+
+  for (const pr of pracList) {
+    page4.drawText(`СФЕРА: ${(pr.area || 'Практика').toUpperCase()}`, {
+      x: 55,
+      y: yP4,
+      size: 8.5,
+      font: fontBold,
+      color: white,
+    });
+    yP4 -= 13;
+
+    page4.drawText('Рекомендация:', { x: 65, y: yP4, size: 7.8, font: fontBold, color: cyanSoft });
+    yP4 -= 11.5;
+    const recLines = wrapText(pr.recommendation || '', 82);
+    for (const rl of recLines) {
+      page4.drawText(rl, { x: 75, y: yP4, size: 7.8, font: fontBody, color: zinc200 });
+      yP4 -= 11;
+    }
+
+    if (pr.reflection_question) {
+      page4.drawText('Вопрос для рефлексии:', { x: 65, y: yP4, size: 7.8, font: fontBold, color: amberAccent });
+      yP4 -= 11.5;
+      const qLines = wrapText(pr.reflection_question, 82);
+      for (const ql of qLines) {
+        page4.drawText(ql, { x: 75, y: yP4, size: 7.8, font: fontBody, color: zinc400 });
+        yP4 -= 11;
+      }
+    }
+
+    yP4 -= 8;
+  }
+
+  // Reminder box
+  yP4 -= 4;
+  page4.drawText('ПРИНЦИП ОСОЗНАННОГО НАБЛЮДЕНИЯ:', {
+    x: 50,
+    y: yP4,
+    size: 8.5,
+    font: fontBold,
+    color: greenSoft,
+  });
+  yP4 -= 14;
+
+  const noteLines = wrapText('Натальная карта описывает не предопределенную судьбу, а распределение психологической энергии. Осознанность превращает привычные напряжения в мастерство сознательного выбора.', 85);
+  for (const nl of noteLines) {
+    page4.drawText(nl, { x: 55, y: yP4, size: 7.8, font: fontBody, color: zinc400 });
+    yP4 -= 11;
+  }
+}
+
 export async function generateAssessmentPdf(params: GeneratePdfParams): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
@@ -673,6 +1887,34 @@ export async function generateAssessmentPdf(params: GeneratePdfParams): Promise<
   if (isIkigai) {
     const ikigaiData = (params.analysisData || {}) as IkigaiAnalysisData;
     await renderIkigaiPages(doc, params, ikigaiData, fontBody, fontBold, logoImg);
+    return await doc.save();
+  }
+
+  const isArchetype =
+    params.testId === 'archetype' ||
+    params.title?.toLowerCase().includes('архетип') ||
+    (Boolean(params.analysisData) &&
+      typeof params.analysisData === 'object' &&
+      ('character_card' in (params.analysisData as any) ||
+        'plan_30_days' in (params.analysisData as any)));
+
+  if (isArchetype) {
+    const archetypeData = (params.analysisData || {}) as ArchetypeAnalysisData;
+    await renderArchetypePages(doc, params, archetypeData, fontBody, fontBold, logoImg);
+    return await doc.save();
+  }
+
+  const isNatal =
+    params.testId === 'natal' ||
+    params.title?.toLowerCase().includes('натальн') ||
+    (Boolean(params.analysisData) &&
+      typeof params.analysisData === 'object' &&
+      ('big_three' in (params.analysisData as any) ||
+        'natal_overview' in (params.analysisData as any)));
+
+  if (isNatal) {
+    const natalData = (params.analysisData || {}) as NatalAnalysisData;
+    await renderNatalPages(doc, params, natalData, fontBody, fontBold, logoImg);
     return await doc.save();
   }
 

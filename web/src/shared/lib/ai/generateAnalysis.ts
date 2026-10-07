@@ -79,6 +79,84 @@ export interface IkigaiAnalysisData {
   }>;
 }
 
+export interface ArchetypeAnalysisData {
+  character_card: {
+    archetypal_basis: string;
+    public_role: string;
+    main_motive?: string;
+    strength: string;
+    contradiction: string;
+    shadow_risk: string;
+    signature_expression?: string;
+    monetization_hypothesis?: string;
+    first_action?: string;
+  };
+  book: {
+    title: string;
+    subtitle: string;
+    sections: Array<{
+      id: number;
+      title: string;
+      body: string;
+    }>;
+  };
+  plan_30_days: Array<{
+    week: number;
+    action: string;
+    deliverable?: string;
+    indicator?: string;
+  }>;
+}
+
+export interface NatalAnalysisData {
+  natal_overview: {
+    title: string;
+    core_motto: string;
+    synthesis: string;
+  };
+  big_three: {
+    sun: {
+      sign: string;
+      house?: number;
+      degree?: string;
+      essence: string;
+    };
+    moon: {
+      sign: string;
+      house?: number;
+      degree?: string;
+      essence: string;
+    };
+    ascendant: {
+      sign: string;
+      degree?: string;
+      essence: string;
+    };
+  };
+  planetary_dynamics?: {
+    mind_and_voice?: { planet?: string; insight: string };
+    desires_and_values?: { planet?: string; insight: string };
+    drive_and_will?: { planet?: string; insight: string };
+    growth_and_boundaries?: { planets?: string; insight: string };
+  };
+  key_aspect_tensions?: Array<{
+    aspect: string;
+    orb?: number;
+    psychological_tension: string;
+    integration_step: string;
+  }>;
+  life_domains?: {
+    vocation_and_mc?: string;
+    relationships?: string;
+    resources?: string;
+  };
+  integration_practices?: Array<{
+    area: string;
+    recommendation: string;
+    reflection_question?: string;
+  }>;
+}
+
 export function getFallbackIkigai(userName: string = 'Искатель'): IkigaiAnalysisData {
   return {
     ikigai_formula: 'Соединение системной экспертизы и творческой свободы для создания понятных решений, приносящих осязаемую пользу людям и устойчивый доход.',
@@ -174,9 +252,160 @@ export function getFallbackIkigai(userName: string = 'Искатель'): Ikigai
   };
 }
 
+export function getFallbackArchetype(userName: string = 'Исследователь'): ArchetypeAnalysisData {
+  return {
+    character_card: {
+      archetypal_basis: 'Искатель / Творец',
+      public_role: 'Интегратор смыслов и первопроходец',
+      main_motive: 'Поиск подлинности, свободы проявления и создание уникальных решений.',
+      strength: 'Способность видеть нестандартные связи и доводить сложные концепции до ясности.',
+      contradiction: 'Тяга к независимости против потребности в признании и надежной команде.',
+      shadow_risk: 'Вечный поиск идеального момента и обесценивание промежуточных результатов.',
+      signature_expression: '«Всё главное проявляется через смелость быть собой.»',
+      monetization_hypothesis: 'Упаковка авторской экспертизы в понятные практические продукты и консультирование.',
+      first_action: 'Зафиксировать свою ключевую ценность и открыто заявить о ней аудитории.',
+    },
+    book: {
+      title: 'Персональная книга бренда',
+      subtitle: `Архетипическая архитектура и позиционирование для ${userName}`,
+      sections: [
+        {
+          id: 1,
+          title: '1. Основа характера и ведущий архетип',
+          body: 'Ваша внутренняя опора строится на архетипе Искателя с ярким включением Творца. Это проявляется в потребности исследовать неизведанное и трансформировать опыт в осязаемые решения.',
+        },
+        {
+          id: 2,
+          title: '2. Внутренний конфликт и противоречие',
+          body: 'Желание полной свободы действий иногда вступает в противоречие с необходимостью методичной регулярной рутины. Баланс достигается через ритмичные спринты.',
+        },
+        {
+          id: 3,
+          title: '3. Публичная роль и позиционирование',
+          body: 'Аудитория воспринимает вас как проводника к ясности. Ваша позиция — эксперт, который не навязывает догмы, а показывает работающие ориентиры.',
+        },
+        {
+          id: 4,
+          title: '4. Подтвержденные сильные стороны',
+          body: 'Глубокий анализ, системность, умение отделять главное от шелухи и создавать эстетичные решения.',
+        },
+        {
+          id: 5,
+          title: '5. Теневая цена стратегии',
+          body: 'Риск интеллектуализации вместо прямого действия и стремление довести всё до совершенства до первого контакта с реальностью.',
+        },
+      ],
+    },
+    plan_30_days: [
+      {
+        week: 1,
+        action: 'Сформулируйте ключевое сообщение бренда и опишите свою публичную роль в 3 предложениях.',
+        deliverable: 'Манифест позиционирования.',
+        indicator: 'Ясность в описании профиля.',
+      },
+      {
+        week: 2,
+        action: 'Опубликуйте разбор кейса или личный инсайт из состояния ведущего архетипа.',
+        deliverable: 'Экспертный материал.',
+        indicator: 'Отклик и диалог с аудиторией.',
+      },
+      {
+        week: 3,
+        action: 'Протестируйте предложение пилотной консультации или продукта среди теплого круга.',
+        deliverable: 'Презентация предложения.',
+        indicator: 'Первые заявки.',
+      },
+      {
+        week: 4,
+        action: 'Подведите итоги месяца и закрепите регулярный ритм проявления.',
+        deliverable: 'Календарь проявления на следующий квартал.',
+        indicator: 'Уверенность и системный поток.',
+      },
+    ],
+  };
+}
+
+export function getFallbackNatal(userName: string = 'Исследователь'): NatalAnalysisData {
+  return {
+    natal_overview: {
+      title: 'Натальная карта · Архитектура личности',
+      core_motto: 'Синтез воли, интуиции и точного практического действия.',
+      synthesis: `Для ${userName} натальная архитектура отражает сочетание яркого творческого импульса и потребности в структурной надежности. Центральная задача — соединить амбициозное видение с заботой о внутреннем эмоциональном ресурсе.`,
+    },
+    big_three: {
+      sun: {
+        sign: 'Овен',
+        house: 1,
+        degree: '15°',
+        essence: 'Осознанное «Я», воля к авторству своей жизни, смелость начинать новое и вести за собой.',
+      },
+      moon: {
+        sign: 'Телец',
+        house: 2,
+        degree: '8°',
+        essence: 'Потребность в эмоциональной стабильности, комфорте, заземлении и надежных материальных опорах.',
+      },
+      ascendant: {
+        sign: 'Близнецы',
+        degree: '22°',
+        essence: 'Социальный фасад: любознательность, контактность, живой ум и способность быстро адаптироваться.',
+      },
+    },
+    planetary_dynamics: {
+      mind_and_voice: {
+        planet: 'Меркурий',
+        insight: 'Быстрое структурное мышление, умение переводить сложные вещи на простой человеческий язык.',
+      },
+      desires_and_values: {
+        planet: 'Венера',
+        insight: 'Высокие стандарты качества, ценность гармонии, красоты и честного взаимовыгодного партнерства.',
+      },
+      drive_and_will: {
+        planet: 'Марс',
+        insight: 'Точечный направленный напор при наличии понятной цели. Неэффективность при монотонном принуждении.',
+      },
+      growth_and_boundaries: {
+        planets: 'Юпитер и Сатурн',
+        insight: 'Баланс широты горизонта (Юпитер) и требовательной внутренней дисциплины (Сатурн).',
+      },
+    },
+    key_aspect_tensions: [
+      {
+        aspect: 'Связка Солнце — Луна',
+        orb: 2.1,
+        psychological_tension: 'Баланс между стремлением к активным прорывам и потребностью в покое и безопасности.',
+        integration_step: 'Не жертвовать сном и телом ради работы; планировать отдых как неотъемлемую часть стратегии.',
+      },
+    ],
+    life_domains: {
+      vocation_and_mc: 'Публичная реализация через авторские проекты и лидерство смыслов.',
+      relationships: 'Равноправное партнерство, основанное на уважении к автономии друг друга.',
+      resources: 'Материальная стабильность как прямое следствие применения аутентичных талантов.',
+    },
+    integration_practices: [
+      {
+        area: 'Осознанное проявление',
+        recommendation: 'Начинайте утро с 10 минут тишины без гаджетов для настройки на внутреннее «Я».',
+        reflection_question: 'В какой сфере сегодня важнее проявить смелость, а в какой — терпение?',
+      },
+      {
+        area: 'Эмоциональный ресурс',
+        recommendation: 'Регулярная физическая активность и контакт с телом для снятия ментального перенапряжения.',
+        reflection_question: 'Что сейчас дает наибольшее ощущение опоры и безопасности?',
+      },
+    ],
+  };
+}
+
 export function getFallbackAnalysisForTest(testId: string, userName: string = 'Исследователь'): unknown {
   if (testId === 'igigay') {
     return getFallbackIkigai(userName);
+  }
+  if (testId === 'archetype') {
+    return getFallbackArchetype(userName);
+  }
+  if (testId === 'natal') {
+    return getFallbackNatal(userName);
   }
   return null;
 }
