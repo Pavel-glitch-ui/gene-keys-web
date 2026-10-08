@@ -12,7 +12,7 @@ import { saveReportToStorage, saveQuizDraft, getQuizDraft, clearQuizDraft } from
 import { IntakeForm } from './IntakeForm';
 import { NatalStep } from './NatalStep';
 import { ScaleStep } from './ScaleStep';
-import { ReflectionStep } from './ReflectionStep';
+import { ReflectionStep, MIN_REFLECTION_CHARS } from './ReflectionStep';
 import { ArrowLeft, ArrowRight, Check } from '@phosphor-icons/react';
 
 export interface QuizModalProps {
@@ -95,7 +95,7 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
     const a = answers[step];
     if (isReflection(currentQ)) {
       if (!a || typeof a !== 'object') return false;
-      return a.skipped === true || (typeof a.text === 'string' && a.text.trim().length >= 40);
+      return a.skipped === true || (typeof a.text === 'string' && a.text.trim().length >= MIN_REFLECTION_CHARS);
     }
     return typeof a === 'number' && a >= 0 && a <= 4;
   };
@@ -241,21 +241,28 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
               <span>Назад</span>
             </Button>
 
-            <Button
-              type="button"
-              variant="primary"
-              size="md"
-              onClick={handleNext}
-              disabled={!isCurrentStepReady()}
-              className="gap-1.5"
-            >
-              <span>{step === test.questions.length - 1 ? 'Собрать разбор' : 'Далее'}</span>
-              {step === test.questions.length - 1 ? (
-                <Check size={16} weight="bold" />
-              ) : (
-                <ArrowRight size={16} weight="bold" />
+            <div className="flex items-center gap-3">
+              {isReflection(currentQ) && !isCurrentStepReady() && (
+                <span className="text-[11px] sm:text-xs text-amber-600 dark:text-amber-400 font-medium hidden sm:inline">
+                  Напишите ещё {Math.max(0, MIN_REFLECTION_CHARS - (((answers[step] as { text?: string })?.text || '').trim().length))} зн.
+                </span>
               )}
-            </Button>
+              <Button
+                type="button"
+                variant="primary"
+                size="md"
+                onClick={handleNext}
+                disabled={!isCurrentStepReady()}
+                className="gap-1.5"
+              >
+                <span>{step === test.questions.length - 1 ? 'Собрать разбор' : 'Далее'}</span>
+                {step === test.questions.length - 1 ? (
+                  <Check size={16} weight="bold" />
+                ) : (
+                  <ArrowRight size={16} weight="bold" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       )}

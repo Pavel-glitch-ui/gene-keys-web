@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CITIES_MOCK } from '@/shared/mock-data/cities';
+import { CITIES_MOCK, resolveCityData } from '@/shared/mock-data/cities';
 import type { NatalChartData } from '@/entities/natal/model/types';
 import { Button } from '@/shared/ui/Button';
-import { CalendarBlank, Clock, MapPin, ArrowRight, SpinnerGap } from '@phosphor-icons/react';
+import { CalendarBlank, Clock, MapPin, ArrowRight, SpinnerGap, PencilSimple } from '@phosphor-icons/react';
 
 export interface NatalStepProps {
   onSubmit: (data: NatalChartData) => void;
@@ -14,11 +14,15 @@ export function NatalStep({ onSubmit }: NatalStepProps) {
   const [date, setDate] = useState('1994-06-15');
   const [time, setTime] = useState('12:00');
   const [cityIndex, setCityIndex] = useState(0);
+  const [isCustomCity, setIsCustomCity] = useState(false);
+  const [customCity, setCustomCity] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const city = CITIES_MOCK[cityIndex] || CITIES_MOCK[0];
+    const city = isCustomCity && customCity.trim()
+      ? resolveCityData(customCity)
+      : CITIES_MOCK[cityIndex] || CITIES_MOCK[0];
 
     setLoading(true);
     try {
@@ -91,21 +95,67 @@ export function NatalStep({ onSubmit }: NatalStepProps) {
       </div>
 
       <div>
-        <label className="flex items-center gap-1.5 text-xs font-semibold text-[var(--foreground)] mb-2">
-          <MapPin size={15} className="text-[var(--accent-purple)]" />
-          <span>Город рождения</span>
-        </label>
-        <select
-          value={cityIndex}
-          onChange={(e) => setCityIndex(Number(e.target.value))}
-          className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent-purple)] transition-colors cursor-pointer"
-        >
-          {CITIES_MOCK.map((c, i) => (
-            <option key={c.name} value={i} className="bg-[var(--surface-1)] text-[var(--foreground)]">
-              {c.name} ({c.timezone})
+        <div className="flex items-center justify-between mb-2">
+          <label className="flex items-center gap-1.5 text-xs font-semibold text-[var(--foreground)]">
+            <MapPin size={15} className="text-[var(--accent-purple)]" />
+            <span>Город рождения</span>
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              setIsCustomCity((prev) => !prev);
+              if (!isCustomCity && !customCity) setCustomCity('');
+            }}
+            className="text-xs text-[var(--accent-purple)] hover:underline cursor-pointer select-none"
+          >
+            <span>{isCustomCity ? '← Выбрать из списка' : '✏️ Ввести свой город'}</span>
+          </button>
+        </div>
+
+        {isCustomCity ? (
+          <div className="flex flex-col gap-1.5">
+            <input
+              type="text"
+              required
+              autoFocus
+              value={customCity}
+              onChange={(e) => setCustomCity(e.target.value)}
+              placeholder="Введите город (например: Самара, Россия)"
+              className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent-purple)] transition-colors"
+            />
+            <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] px-1">
+              <span>Координаты и часовой пояс определятся автоматически</span>
+              <button
+                type="button"
+                onClick={() => setIsCustomCity(false)}
+                className="text-[var(--accent-purple)] hover:underline cursor-pointer"
+              >
+                К списку
+              </button>
+            </div>
+          </div>
+        ) : (
+          <select
+            value={cityIndex}
+            onChange={(e) => {
+              if (e.target.value === 'custom') {
+                setIsCustomCity(true);
+              } else {
+                setCityIndex(Number(e.target.value));
+              }
+            }}
+            className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent-purple)] transition-colors cursor-pointer"
+          >
+            {CITIES_MOCK.map((c, i) => (
+              <option key={c.name} value={i} className="bg-[var(--surface-1)] text-[var(--foreground)]">
+                {c.name} ({c.timezone})
+              </option>
+            ))}
+            <option value="custom" className="bg-[var(--surface-1)] text-[var(--accent-purple)] font-semibold">
+              ✏️ Другой город (ввести свой вручную)...
             </option>
-          ))}
-        </select>
+          </select>
+        )}
       </div>
 
       <div className="p-3.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-[11px] text-[var(--text-muted)] leading-relaxed transition-colors">
