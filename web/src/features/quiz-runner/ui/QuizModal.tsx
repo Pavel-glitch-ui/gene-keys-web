@@ -44,6 +44,10 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
 
     if (draft && Array.isArray(draft.answers) && draft.answers.length === test.questions.length) {
       setHasDraft(true);
+      // Pre-fill profile if draft exists
+      if (draft.profile) {
+        setProfile(draft.profile);
+      }
     } else {
       setHasDraft(false);
       setPhase('intake');
@@ -54,9 +58,9 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
     }
   }, [test, isOpen]);
 
-  // Autosave draft on answers change
+  // Autosave draft whenever state changes while modal is open
   useEffect(() => {
-    if (!test || phase === 'intake' || !isOpen) return;
+    if (!test || !isOpen) return;
     saveQuizDraft(test.id, {
       phase,
       step,
@@ -186,6 +190,7 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
             hasDraft={hasDraft}
             onResumeDraft={handleResumeDraft}
             onSubmit={handleIntakeSubmit}
+            initialProfile={profile}
           />
         </div>
       )}

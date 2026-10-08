@@ -4,7 +4,12 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { TestSchema } from '@/entities/test/model/types';
 import type { CompletedReport } from '@/entities/report/model/types';
 import { MOCK_TESTS } from '@/shared/mock-data/tests';
-import { loadReportsFromStorage, saveReportToStorage } from '@/shared/lib/storage';
+import {
+  loadReportsFromStorage,
+  saveReportToStorage,
+  getActiveReportIdFromStorage,
+  saveActiveReportIdToStorage,
+} from '@/shared/lib/storage';
 
 interface AppStateContextType {
   tests: TestSchema[];
@@ -35,9 +40,18 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     const loaded = loadReportsFromStorage();
     setReportsHistory(loaded);
     if (loaded.length > 0 && !activeReport) {
-      setActiveReport(loaded[0]);
+      const savedActiveId = getActiveReportIdFromStorage();
+      const match = savedActiveId ? loaded.find((r) => r.id === savedActiveId) : null;
+      setActiveReport(match || loaded[0]);
     }
   }, []);
+
+  // Save active report ID whenever it changes
+  useEffect(() => {
+    if (activeReport) {
+      saveActiveReportIdToStorage(activeReport.id);
+    }
+  }, [activeReport]);
 
   const activeTest = activeTestId ? tests.find((t) => t.id === activeTestId) || null : null;
 

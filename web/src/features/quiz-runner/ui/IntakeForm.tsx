@@ -12,6 +12,7 @@ export interface IntakeFormProps {
   hasDraft: boolean;
   onResumeDraft: () => void;
   onSubmit: (profile: UserProfile) => void;
+  initialProfile?: UserProfile;
 }
 
 const FOCUS_OPTIONS = [
@@ -22,17 +23,17 @@ const FOCUS_OPTIONS = [
   'Опоры и восстановление',
 ];
 
-export function IntakeForm({ test, hasDraft, onResumeDraft, onSubmit }: IntakeFormProps) {
+export function IntakeForm({ test, hasDraft, onResumeDraft, onSubmit, initialProfile }: IntakeFormProps) {
   const { leadName } = useTelegramContext();
-  const [name, setName] = useState(leadName || '');
-  const [focus, setFocus] = useState(FOCUS_OPTIONS[0]);
+  const [name, setName] = useState(initialProfile?.name || leadName || '');
+  const [focus, setFocus] = useState(initialProfile?.focus || FOCUS_OPTIONS[0]);
 
   // Update name if leadName loads later
   React.useEffect(() => {
-    if (leadName && !name) {
+    if (leadName && !name && !initialProfile?.name) {
       setName(leadName);
     }
-  }, [leadName, name]);
+  }, [leadName, name, initialProfile]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
