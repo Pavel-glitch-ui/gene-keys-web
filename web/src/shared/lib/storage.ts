@@ -3,6 +3,27 @@ import { MOCK_REPORTS } from '@/shared/mock-data/sample-reports';
 
 const STORAGE_KEY = 'ten-reports-v2';
 const DRAFT_PREFIX = 'ten-interview-draft-';
+const ACTIVE_REPORT_KEY = 'ten-active-report-id';
+
+export function getActiveReportIdFromStorage(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return localStorage.getItem(ACTIVE_REPORT_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function saveActiveReportIdToStorage(id: string | null): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (id) {
+      localStorage.setItem(ACTIVE_REPORT_KEY, id);
+    } else {
+      localStorage.removeItem(ACTIVE_REPORT_KEY);
+    }
+  } catch {}
+}
 
 export function loadReportsFromStorage(): CompletedReport[] {
   if (typeof window === 'undefined') return MOCK_REPORTS;
