@@ -10,6 +10,7 @@ import {
   NATAL_CARD_SYSTEM_PROMPT,
   buildNatalCardUserPrompt,
 } from './prompts';
+import { generateFallbackAnalysis as getGeneKeysFallback } from './generateGeneKeysAnalysis';
 
 import type { GeneKeysCalculatedProfile, NatalChartCalculationResult } from '../calculator';
 
@@ -406,6 +407,9 @@ export function getFallbackAnalysisForTest(testId: string, userName: string = '�
   }
   if (testId === 'natal') {
     return getFallbackNatal(userName);
+  }
+  if (testId === 'genes') {
+    return getGeneKeysFallback({ name: userName, testTitle: 'Золотой Путь' });
   }
   return null;
 }

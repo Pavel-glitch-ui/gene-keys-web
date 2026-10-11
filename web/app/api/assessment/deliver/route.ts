@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
         calculationData: natal,
       });
 
-      aiAnalysisResult = result.data;
+      aiAnalysisResult = result.data || getFallbackAnalysisForTest(testId, profile?.name);
       console.log('[Assessment Deliver] AI analysis generated successfully', {
         testId,
         success: result.success,
