@@ -156,7 +156,7 @@ export async function generateGeneKeysAnalysis(
   }
 }
 
-function generateFallbackAnalysis(input: UserAssessmentInput): GeneKeysAIAnalysis {
+export function generateFallbackAnalysis(input: UserAssessmentInput): GeneKeysAIAnalysis {
   const hasFullNatal = Boolean(input.birthDate && input.birthTime && input.birthPlace);
 
   return {
