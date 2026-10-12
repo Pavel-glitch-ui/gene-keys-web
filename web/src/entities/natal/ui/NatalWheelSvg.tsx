@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import type { NatalChartData } from '@/entities/natal/model/types';
 
 export interface NatalWheelSvgProps {
@@ -14,7 +14,7 @@ const ZODIAC_SIGNS = [
   'Стрелец', 'Козерог', 'Водолей', 'Рыбы'
 ];
 
-export function NatalWheelSvg({ data, size = 440 }: NatalWheelSvgProps) {
+export const NatalWheelSvg = React.memo(function NatalWheelSvg({ data, size = 440 }: NatalWheelSvgProps) {
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
 
   const ascLong = data.ascendant?.longitude ?? 0;
@@ -22,10 +22,10 @@ export function NatalWheelSvg({ data, size = 440 }: NatalWheelSvgProps) {
   const cy = 220;
 
   // Calculates [x, y] on wheel rotated so Ascendant is at 180° (9 o'clock)
-  const getPoint = (deg: number, rad: number): [number, number] => {
+  const getPoint = useCallback((deg: number, rad: number): [number, number] => {
     const angleRad = ((180 - deg + ascLong) * Math.PI) / 180;
     return [cx + Math.cos(angleRad) * rad, cy + Math.sin(angleRad) * rad];
-  };
+  }, [ascLong]);
 
   return (
     <div className="flex flex-col items-center">
@@ -152,4 +152,4 @@ export function NatalWheelSvg({ data, size = 440 }: NatalWheelSvgProps) {
       )}
     </div>
   );
-}
+});

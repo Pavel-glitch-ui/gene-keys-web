@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { TestSchema } from '@/entities/test/model/types';
 import type { CompletedReport } from '@/entities/report/model/types';
 import { MOCK_TESTS } from '@/shared/mock-data/tests';
@@ -53,47 +53,63 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     }
   }, [activeReport]);
 
-  const activeTest = activeTestId ? tests.find((t) => t.id === activeTestId) || null : null;
+  const activeTest = useMemo(() => {
+    return activeTestId ? tests.find((t) => t.id === activeTestId) || null : null;
+  }, [activeTestId, tests]);
 
-  const startTest = (id: string) => {
+  const startTest = useCallback((id: string) => {
     setActiveTestId(id);
-  };
+  }, []);
 
-  const closeTest = () => {
+  const closeTest = useCallback(() => {
     setActiveTestId(null);
-  };
+  }, []);
 
-  const completeTest = (report: CompletedReport) => {
+  const completeTest = useCallback((report: CompletedReport) => {
     const updated = saveReportToStorage(report);
     setReportsHistory(updated);
     setActiveReport(report);
     setActiveTestId(null);
-  };
+  }, []);
 
-  const viewReportById = (id: string) => {
+  const viewReportById = useCallback((id: string) => {
     const match = reportsHistory.find((r) => r.id === id);
     if (match) {
       setActiveReport(match);
     }
-  };
+  }, [reportsHistory]);
+
+  const contextValue = useMemo<AppStateContextType>(
+    () => ({
+      tests,
+      filter,
+      setFilter,
+      activeTestId,
+      activeTest,
+      startTest,
+      closeTest,
+      activeReport,
+      setActiveReport,
+      reportsHistory,
+      completeTest,
+      viewReportById,
+    }),
+    [
+      tests,
+      filter,
+      activeTestId,
+      activeTest,
+      startTest,
+      closeTest,
+      activeReport,
+      reportsHistory,
+      completeTest,
+      viewReportById,
+    ]
+  );
 
   return (
-    <AppStateContext.Provider
-      value={{
-        tests,
-        filter,
-        setFilter,
-        activeTestId,
-        activeTest,
-        startTest,
-        closeTest,
-        activeReport,
-        setActiveReport,
-        reportsHistory,
-        completeTest,
-        viewReportById,
-      }}
-    >
+    <AppStateContext.Provider value={contextValue}>
       {children}
     </AppStateContext.Provider>
   );

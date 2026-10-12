@@ -8,7 +8,7 @@ export interface FourWeekPlanProps {
   plan: PlanStepItem[];
 }
 
-export function FourWeekPlan({ plan }: FourWeekPlanProps) {
+export const FourWeekPlan = React.memo(function FourWeekPlan({ plan }: FourWeekPlanProps) {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-2">
@@ -56,4 +56,4 @@ export function FourWeekPlan({ plan }: FourWeekPlanProps) {
       </div>
     </div>
   );
-}
+});
