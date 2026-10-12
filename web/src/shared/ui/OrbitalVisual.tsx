@@ -58,7 +58,7 @@ export const OrbitalVisual = React.memo(function OrbitalVisual() {
 
       {/* Orbit Track 1 (Outer) */}
       <div className="absolute inset-0 rounded-full animate-orbit-1 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
+        <div className="absolute top-0 left-1/2 pointer-events-auto">
           <div className="animate-counter-1 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none whitespace-nowrap transition-colors">
             <Sparkle size={12} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0" />
             <span>истории</span>
@@ -68,7 +68,7 @@ export const OrbitalVisual = React.memo(function OrbitalVisual() {
 
       {/* Orbit Track 2 (Middle) */}
       <div className="absolute inset-6 rounded-full animate-orbit-2 pointer-events-none">
-        <div className="absolute bottom-1/4 right-0 translate-x-1/2 pointer-events-auto">
+        <div className="absolute top-[75%] left-[93.3%] pointer-events-auto">
           <div className="animate-counter-2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none whitespace-nowrap transition-colors">
             <Compass size={12} weight="bold" className="text-purple-600 dark:text-purple-400 shrink-0" />
             <span>выбор</span>
@@ -78,7 +78,7 @@ export const OrbitalVisual = React.memo(function OrbitalVisual() {
 
       {/* Orbit Track 3 (Inner) */}
       <div className="absolute inset-12 rounded-full animate-orbit-3 pointer-events-none">
-        <div className="absolute bottom-1/4 left-0 -translate-x-1/2 pointer-events-auto">
+        <div className="absolute top-[75%] left-[6.7%] pointer-events-auto">
           <div className="animate-counter-3 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none whitespace-nowrap transition-colors">
             <Heart size={12} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0" />
             <span>желания</span>
