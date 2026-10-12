@@ -12,7 +12,7 @@ export interface TestCardProps {
   onStart: (testId: string) => void;
 }
 
-export function TestCard({ test, onStart }: TestCardProps) {
+export const TestCard = React.memo(function TestCard({ test, onStart }: TestCardProps) {
   const getIcon = (id: string) => {
     switch (id) {
       case 'genes':
@@ -34,7 +34,7 @@ export function TestCard({ test, onStart }: TestCardProps) {
     <motion.article
       whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
       whileTap={{ scale: 0.985 }}
-      className="group relative flex flex-col justify-between p-5 sm:p-7 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] hover:border-[var(--accent-purple)]/60 shadow-sm hover:shadow-lg hover:shadow-purple-950/5 dark:hover:shadow-purple-950/30 transition-all duration-200"
+      className="group relative flex flex-col justify-between p-5 sm:p-7 rounded-2xl bg-[var(--surface-1)] border border-[var(--border)] hover:border-[var(--accent-purple)]/60 shadow-sm hover:shadow-lg hover:shadow-purple-950/5 dark:hover:shadow-purple-950/30 transition-[border-color,box-shadow,background-color] duration-200"
     >
       <div>
         {/* Top bar */}
@@ -77,4 +77,4 @@ export function TestCard({ test, onStart }: TestCardProps) {
       </div>
     </motion.article>
   );
-}
+});

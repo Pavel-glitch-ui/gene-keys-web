@@ -9,6 +9,9 @@ import type {
   NatalAnalysisData,
 } from '../ai/generateAnalysis';
 
+let cachedRegularBytes: Buffer | null = null;
+let cachedBoldBytes: Buffer | null = null;
+
 export interface GeneratePdfParams {
   testId?: string;
   title: string;
@@ -2472,11 +2475,15 @@ export async function generateAssessmentPdf(params: GeneratePdfParams): Promise<
     throw new Error('Required Cyrillic fonts (arial.ttf, arialbd.ttf) not found');
   }
 
-  const regularBytes = fs.readFileSync(regularPath);
-  const boldBytes = fs.readFileSync(boldPath);
+  if (!cachedRegularBytes) {
+    cachedRegularBytes = fs.readFileSync(regularPath);
+  }
+  if (!cachedBoldBytes) {
+    cachedBoldBytes = fs.readFileSync(boldPath);
+  }
 
-  const fontBody = await doc.embedFont(regularBytes);
-  const fontBold = await doc.embedFont(boldBytes);
+  const fontBody = await doc.embedFont(cachedRegularBytes);
+  const fontBold = await doc.embedFont(cachedBoldBytes);
 
   const logoPath = path.resolve(process.cwd(), 'public/logo.png');
   let logoImg: any = null;

@@ -19,7 +19,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium transition-all duration-200 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 select-none';
+    'inline-flex items-center justify-center font-medium transition-[background-color,border-color,color,box-shadow,transform,opacity] duration-200 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 select-none';
 
   const sizeStyles = {
     sm: 'text-xs px-3 py-1.5 rounded-lg gap-1.5',
