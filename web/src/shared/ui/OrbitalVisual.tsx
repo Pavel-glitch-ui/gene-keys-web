@@ -1,117 +1,52 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
-import gsap from 'gsap';
+import React from 'react';
 import { Sparkle, Compass, Heart } from '@phosphor-icons/react';
 
-export function OrbitalVisual() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const node1Ref = useRef<HTMLDivElement>(null);
-  const node2Ref = useRef<HTMLDivElement>(null);
-  const node3Ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const ctx = gsap.context(() => {
-      const getRadii = () => {
-        const width = containerRef.current ? containerRef.current.clientWidth : 288;
-        const r1 = width / 2;
-        const r2 = Math.max(r1 - 24, 20); // inset-6
-        const r3 = Math.max(r1 - 48, 10); // inset-12
-        return { r1, r2, r3 };
-      };
-
-      let radii = getRadii();
-
-      const handleResize = () => {
-        radii = getRadii();
-      };
-      window.addEventListener('resize', handleResize);
-
-      // Node 1: "истории" on outer orbit (r1), starts at top (-90 deg), moves clockwise (52s)
-      const state1 = { angle: -90 };
-      gsap.to(state1, {
-        angle: 270,
-        duration: 52,
-        repeat: -1,
-        ease: 'none',
-        onUpdate: () => {
-          if (!node1Ref.current) return;
-          const rad = (state1.angle * Math.PI) / 180;
-          const x = radii.r1 * Math.cos(rad);
-          const y = radii.r1 * Math.sin(rad);
-          gsap.set(node1Ref.current, {
-            xPercent: -50,
-            yPercent: -50,
-            x,
-            y,
-            rotation: 0,
-            force3D: true,
-          });
-        },
-      });
-
-      // Node 2: "выбор" on middle orbit (r2), starts at bottom-right (35 deg), moves counter-clockwise (40s)
-      const state2 = { angle: 35 };
-      gsap.to(state2, {
-        angle: -325,
-        duration: 40,
-        repeat: -1,
-        ease: 'none',
-        onUpdate: () => {
-          if (!node2Ref.current) return;
-          const rad = (state2.angle * Math.PI) / 180;
-          const x = radii.r2 * Math.cos(rad);
-          const y = radii.r2 * Math.sin(rad);
-          gsap.set(node2Ref.current, {
-            xPercent: -50,
-            yPercent: -50,
-            x,
-            y,
-            rotation: 0,
-            force3D: true,
-          });
-        },
-      });
-
-      // Node 3: "желания" on inner orbit (r3), starts at bottom-left (145 deg), moves clockwise (30s)
-      const state3 = { angle: 145 };
-      gsap.to(state3, {
-        angle: 505,
-        duration: 30,
-        repeat: -1,
-        ease: 'none',
-        onUpdate: () => {
-          if (!node3Ref.current) return;
-          const rad = (state3.angle * Math.PI) / 180;
-          const x = radii.r3 * Math.cos(rad);
-          const y = radii.r3 * Math.sin(rad);
-          gsap.set(node3Ref.current, {
-            xPercent: -50,
-            yPercent: -50,
-            x,
-            y,
-            rotation: 0,
-            force3D: true,
-          });
-        },
-      });
-
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      };
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
-
+export const OrbitalVisual = React.memo(function OrbitalVisual() {
   return (
     <div
-      ref={containerRef}
       className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 flex items-center justify-center select-none mx-auto shrink-0"
       aria-hidden="true"
     >
+      {/* CSS Keyframes for GPU-accelerated orbits */}
+      <style>{`
+        @keyframes orbit-cw {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes orbit-ccw {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+        @keyframes counter-rotate-cw {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(-360deg); }
+        }
+        @keyframes counter-rotate-ccw {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .animate-orbit-1 {
+          animation: orbit-cw 52s linear infinite;
+        }
+        .animate-orbit-2 {
+          animation: orbit-ccw 40s linear infinite;
+        }
+        .animate-orbit-3 {
+          animation: orbit-cw 30s linear infinite;
+        }
+        .animate-counter-1 {
+          animation: counter-rotate-cw 52s linear infinite;
+        }
+        .animate-counter-2 {
+          animation: counter-rotate-ccw 40s linear infinite;
+        }
+        .animate-counter-3 {
+          animation: counter-rotate-cw 30s linear infinite;
+        }
+      `}</style>
+
       {/* Outer static hairline orbit */}
       <div className="absolute inset-0 rounded-full border border-zinc-200 dark:border-white/10 pointer-events-none transition-colors" />
 
@@ -121,34 +56,34 @@ export function OrbitalVisual() {
       {/* Inner static hairline orbit */}
       <div className="absolute inset-12 rounded-full border border-zinc-200 dark:border-white/10 pointer-events-none transition-colors" />
 
-      {/* Node 1: "истории" */}
-      <div
-        ref={node1Ref}
-        className="absolute top-1/2 left-1/2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none pointer-events-auto whitespace-nowrap will-change-transform transition-colors"
-        style={{ transform: 'translate(-50%, -50%)' }}
-      >
-        <Sparkle size={12} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0" />
-        <span>истории</span>
+      {/* Orbit Track 1 (Outer) */}
+      <div className="absolute inset-0 rounded-full animate-orbit-1 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
+          <div className="animate-counter-1 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none whitespace-nowrap transition-colors">
+            <Sparkle size={12} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0" />
+            <span>истории</span>
+          </div>
+        </div>
       </div>
 
-      {/* Node 2: "выбор" */}
-      <div
-        ref={node2Ref}
-        className="absolute top-1/2 left-1/2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none pointer-events-auto whitespace-nowrap will-change-transform transition-colors"
-        style={{ transform: 'translate(-50%, -50%)' }}
-      >
-        <Compass size={12} weight="bold" className="text-purple-600 dark:text-purple-400 shrink-0" />
-        <span>выбор</span>
+      {/* Orbit Track 2 (Middle) */}
+      <div className="absolute inset-6 rounded-full animate-orbit-2 pointer-events-none">
+        <div className="absolute bottom-1/4 right-0 translate-x-1/2 pointer-events-auto">
+          <div className="animate-counter-2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none whitespace-nowrap transition-colors">
+            <Compass size={12} weight="bold" className="text-purple-600 dark:text-purple-400 shrink-0" />
+            <span>выбор</span>
+          </div>
+        </div>
       </div>
 
-      {/* Node 3: "желания" */}
-      <div
-        ref={node3Ref}
-        className="absolute top-1/2 left-1/2 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none pointer-events-auto whitespace-nowrap will-change-transform transition-colors"
-        style={{ transform: 'translate(-50%, -50%)' }}
-      >
-        <Heart size={12} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0" />
-        <span>желания</span>
+      {/* Orbit Track 3 (Inner) */}
+      <div className="absolute inset-12 rounded-full animate-orbit-3 pointer-events-none">
+        <div className="absolute bottom-1/4 left-0 -translate-x-1/2 pointer-events-auto">
+          <div className="animate-counter-3 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-black border border-zinc-200 dark:border-white/20 text-[9px] sm:text-[10px] tracking-wider uppercase text-zinc-800 dark:text-white shadow-xs dark:shadow-none whitespace-nowrap transition-colors">
+            <Heart size={12} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0" />
+            <span>желания</span>
+          </div>
+        </div>
       </div>
 
       {/* Central Core */}
@@ -159,4 +94,4 @@ export function OrbitalVisual() {
       </div>
     </div>
   );
-}
+});

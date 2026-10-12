@@ -8,7 +8,7 @@ export interface SynthesisCardProps {
   interactions: InteractionItem[];
 }
 
-export function SynthesisCard({ interactions }: SynthesisCardProps) {
+export const SynthesisCard = React.memo(function SynthesisCard({ interactions }: SynthesisCardProps) {
   if (!interactions || interactions.length === 0) return null;
 
   return (
@@ -37,4 +37,4 @@ export function SynthesisCard({ interactions }: SynthesisCardProps) {
       </div>
     </div>
   );
-}
+});

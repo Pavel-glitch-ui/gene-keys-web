@@ -2444,9 +2444,10 @@ async function renderGeneKeysPages(
   }
 }
 
-export async function generateAssessmentPdf(params: GeneratePdfParams): Promise<Uint8Array> {
-  const doc = await PDFDocument.create();
-  doc.registerFontkit(fontkit);
+let cachedFontBytes: { regular: Buffer; bold: Buffer } | null = null;
+
+function loadFontsFromDisk(): { regular: Buffer; bold: Buffer } {
+  if (cachedFontBytes) return cachedFontBytes;
 
   const possibleFontsDirs = [
     path.resolve(process.cwd(), 'src/shared/assets/fonts'),
@@ -2472,8 +2473,19 @@ export async function generateAssessmentPdf(params: GeneratePdfParams): Promise<
     throw new Error('Required Cyrillic fonts (arial.ttf, arialbd.ttf) not found');
   }
 
-  const regularBytes = fs.readFileSync(regularPath);
-  const boldBytes = fs.readFileSync(boldPath);
+  cachedFontBytes = {
+    regular: fs.readFileSync(regularPath),
+    bold: fs.readFileSync(boldPath),
+  };
+
+  return cachedFontBytes;
+}
+
+export async function generateAssessmentPdf(params: GeneratePdfParams): Promise<Uint8Array> {
+  const doc = await PDFDocument.create();
+  doc.registerFontkit(fontkit);
+
+  const { regular: regularBytes, bold: boldBytes } = loadFontsFromDisk();
 
   const fontBody = await doc.embedFont(regularBytes);
   const fontBold = await doc.embedFont(boldBytes);

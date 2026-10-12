@@ -8,7 +8,7 @@ export interface FilterTabsProps {
   onSelect: (filter: string) => void;
 }
 
-export function FilterTabs({ filters, activeFilter, onSelect }: FilterTabsProps) {
+export const FilterTabs = React.memo(function FilterTabs({ filters, activeFilter, onSelect }: FilterTabsProps) {
   return (
     <div className="flex flex-wrap items-center gap-2" role="tablist">
       {filters.map((filter) => {
@@ -32,4 +32,4 @@ export function FilterTabs({ filters, activeFilter, onSelect }: FilterTabsProps)
       })}
     </div>
   );
-}
+});

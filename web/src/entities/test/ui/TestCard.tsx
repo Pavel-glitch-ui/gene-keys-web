@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { motion } from 'framer-motion';
 import type { TestSchema } from '@/entities/test/model/types';
 import { Badge } from '@/shared/ui/Badge';
@@ -12,7 +12,11 @@ export interface TestCardProps {
   onStart: (testId: string) => void;
 }
 
-export function TestCard({ test, onStart }: TestCardProps) {
+export const TestCard = React.memo(function TestCard({ test, onStart }: TestCardProps) {
+  const handleClick = useCallback(() => {
+    onStart(test.id);
+  }, [onStart, test.id]);
+
   const getIcon = (id: string) => {
     switch (id) {
       case 'genes':
@@ -68,7 +72,7 @@ export function TestCard({ test, onStart }: TestCardProps) {
           variant="primary"
           fullWidth
           size="md"
-          onClick={() => onStart(test.id)}
+          onClick={handleClick}
           className="min-h-[44px]"
         >
           <span>Пройти исследование</span>
@@ -77,4 +81,4 @@ export function TestCard({ test, onStart }: TestCardProps) {
       </div>
     </motion.article>
   );
-}
+});

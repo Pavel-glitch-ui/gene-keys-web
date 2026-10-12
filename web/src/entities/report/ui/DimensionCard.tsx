@@ -3,14 +3,14 @@
 import React, { useState } from 'react';
 import type { DimensionReportItem } from '@/entities/report/model/types';
 import { ScoreBar } from '@/shared/ui/ScoreBar';
-import { CaretDown, CaretUp, Lightbulb, ChatText, ArrowRight, ShieldCheck } from '@phosphor-icons/react';
+import { CaretDown, CaretUp, Lightbulb, ChatText, ShieldCheck } from '@phosphor-icons/react';
 
 export interface DimensionCardProps {
   dimension: DimensionReportItem;
   index: number;
 }
 
-export function DimensionCard({ dimension, index }: DimensionCardProps) {
+export const DimensionCard = React.memo(function DimensionCard({ dimension, index }: DimensionCardProps) {
   const [evidenceOpen, setEvidenceOpen] = useState(false);
 
   return (
@@ -108,4 +108,4 @@ export function DimensionCard({ dimension, index }: DimensionCardProps) {
       </div>
     </article>
   );
-}
+});
