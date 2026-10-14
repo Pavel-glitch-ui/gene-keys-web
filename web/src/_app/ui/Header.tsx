@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { List, X, Compass, Info } from '@phosphor-icons/react';
+import { List, X, Compass, Info, ClockCounterClockwise } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { ThemeToggle } from '@/src/features/theme-toggle';
 
@@ -14,6 +14,7 @@ export function Header() {
   const getBreadcrumb = () => {
     if (pathname === '/') return 'Мое пространство / Исследовать себя';
     if (pathname === '/checkout') return 'Мое пространство / Персональный разбор';
+    if (pathname === '/results/history') return 'Мое пространство / История разборов';
     if (pathname === '/about') return 'Мое пространство / Как это работает';
     return 'Мое пространство';
   };
@@ -66,9 +67,17 @@ export function Header() {
             <span>Выбрать тест</span>
           </Link>
           <Link
+            href="/results/history"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--surface-2)] text-sm font-medium text-[var(--foreground)] transition-colors"
+          >
+            <ClockCounterClockwise size={18} className="text-purple-600 dark:text-purple-400" />
+            <span>История разборов</span>
+          </Link>
+          <Link
             href="/about"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-neutral-900 text-sm font-medium text-zinc-700 dark:text-zinc-200 transition-colors"
+            className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--surface-2)] text-sm font-medium text-[var(--foreground)] transition-colors"
           >
             <Info size={18} className="text-purple-600 dark:text-purple-400" />
             <span>Как это работает</span>
