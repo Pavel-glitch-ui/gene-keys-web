@@ -35,9 +35,6 @@ importers:
       '@phosphor-icons/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      esbuild:
-        specifier: ^0.25.0
-        version: 0.25.12
       framer-motion:
         specifier: ^14.0.0
         version: 14.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -47,9 +44,6 @@ importers:
       grammy:
         specifier: ^1.46.0
         version: 1.46.0(encoding@0.1.13)
-      gsap:
-        specifier: ^3.15.0
-        version: 3.15.0
       jsonrepair:
         specifier: ^3.15.0
         version: 3.15.0
@@ -71,9 +65,6 @@ importers:
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
-      tsx:
-        specifier: ^4.23.15
-        version: 4.23.15
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
@@ -87,6 +78,9 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.3.0(@types/react@19.3.0)
+      esbuild:
+        specifier: ^0.25.0
+        version: 0.25.12
       eslint:
         specifier: ^9
         version: 9.39.5(jiti@2.7.0)
@@ -96,6 +90,9 @@ importers:
       tailwindcss:
         specifier: ^4
         version: 4.3.3
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -1651,9 +1648,6 @@ packages:
   grammy@1.46.0:
     resolution: {integrity: sha512-/8Qw+iisrUdOMk+p2mjEHouMm/BBdBEN1DHh16wiTpRUZkxDG3PxexdjCvR+wvK3LWPdrEvnQbdrwpU954sPhg==}
     engines: {node: ^12.20.0 || >=14.13.1}
-
-  gsap@3.15.0:
-    resolution: {integrity: sha512-dMW4CWBTUK1AEEDeZc1g4xpPGIrSf9fJF960qbTZmN/QwZIWY5wgliS6JWl9/25fpTGJrMRtSjGtOmPnfjZB+A==}
 
   has-bigints@1.1.0:
     resolution: {integrity: sha512-R3pbpkcIqv2Pm3dUwgjclDRVmWpTJW2DcMzcIhEXEx1oh/CEMObMm3KLmRJOdvhM7o4uQBnwr8pzRK2sJWIqfg==}
@@ -4086,8 +4080,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
-
-  gsap@3.15.0: {}
 
   has-bigints@1.1.0: {}
 

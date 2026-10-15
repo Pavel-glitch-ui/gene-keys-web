@@ -139,8 +139,8 @@ export async function generateGeneKeysAnalysis(
         { role: 'user', content: userPayload },
       ],
       response_format: { type: 'json_object' },
-      temperature: 0.7,
-      max_tokens: 3000,
+      temperature: 0.5,
+      max_tokens: 1600,
     });
 
     const content = response.choices[0]?.message?.content;

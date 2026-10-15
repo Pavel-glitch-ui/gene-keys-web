@@ -100,13 +100,13 @@ export function CheckoutPage() {
 
     stageIntervalRef.current = setInterval(() => {
       const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
-      if (elapsed < 4) {
+      if (elapsed < 2) {
         setDeliveryStage('init');
-      } else if (elapsed < 24) {
+      } else if (elapsed < 5) {
         setDeliveryStage('analyzing');
-      } else if (elapsed < 50) {
+      } else if (elapsed < 8) {
         setDeliveryStage('synthesizing');
-      } else if (elapsed < 75) {
+      } else if (elapsed < 11) {
         setDeliveryStage('rendering_pdf');
       } else {
         setDeliveryStage('delivering');

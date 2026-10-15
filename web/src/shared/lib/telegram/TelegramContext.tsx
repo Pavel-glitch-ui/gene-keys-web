@@ -55,13 +55,39 @@ export function TelegramProvider({ children }: { children: React.ReactNode }) {
   const [testId, setTestId] = useState<string | null>(null);
   const [leadName, setLeadName] = useState<string | null>(null);
 
-  // Load from sessionStorage on first client render
+  // Load from Telegram WebApp or sessionStorage on first client render
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const tg = (window as any).Telegram?.WebApp;
+      if (tg) {
+        try {
+          tg.ready?.();
+          tg.expand?.();
+
+          const tgUser = tg.initDataUnsafe?.user;
+          if (tgUser?.id) {
+            const stringId = String(tgUser.id);
+            setChatIdState(stringId);
+            sessionStorage.setItem('ten_telegram_chat_id', stringId);
+          }
+          if (tgUser?.first_name) {
+            const fullName = [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ');
+            setLeadName(fullName);
+            sessionStorage.setItem('ten_telegram_lead_name', fullName);
+          }
+        } catch (e) {
+          console.warn('[Telegram WebApp init warning]:', e);
+        }
+      }
+
       const cachedChatId = sessionStorage.getItem('ten_telegram_chat_id');
       const cachedLeadName = sessionStorage.getItem('ten_telegram_lead_name');
-      if (cachedChatId) setChatIdState(cachedChatId);
-      if (cachedLeadName) setLeadName(cachedLeadName);
+      if (cachedChatId) {
+        setChatIdState((prev) => prev || cachedChatId);
+      }
+      if (cachedLeadName) {
+        setLeadName((prev) => prev || cachedLeadName);
+      }
     }
   }, []);
 

@@ -10,9 +10,12 @@ import {
   NATAL_CARD_SYSTEM_PROMPT,
   buildNatalCardUserPrompt,
 } from './prompts';
-import { generateFallbackAnalysis as getGeneKeysFallback } from './generateGeneKeysAnalysis';
+import {
+  generateFallbackAnalysis as getGeneKeysFallback,
+  type GeneKeysAIAnalysis,
+} from './generateGeneKeysAnalysis';
 
-import type { GeneKeysCalculatedProfile, NatalChartCalculationResult } from '../calculator';
+import { computeGeneKeysProfile, type GeneKeysCalculatedProfile, type NatalChartCalculationResult } from '../calculator';
 
 export interface AssessmentRequestData {
   testId: string;
@@ -414,6 +417,75 @@ export function getFallbackAnalysisForTest(testId: string, userName: string = '�
   return null;
 }
 
+export function normalizeGeneKeysResult(raw: any, userName: string = 'Исследователь'): GeneKeysAIAnalysis {
+  const fallback = getGeneKeysFallback({ name: userName, testTitle: 'Золотой Путь' });
+  if (!raw || typeof raw !== 'object') return fallback;
+
+  const actRaw = raw.activationSequence || raw.activation_sequence || {};
+  const venRaw = raw.venusSequence || raw.venus_sequence || {};
+  const pearlRaw = raw.pearlSequence || raw.pearl_sequence || {};
+  const synthRaw = raw.finalSynthesis || raw.profile_overview || {};
+
+  const mapSphere = (item: any, fallbackItem: any) => {
+    if (!item || typeof item !== 'object') return fallbackItem;
+    const name = item.name || (item.key ? `${item.key}-й Генный Ключ${item.line ? ` (Линия ${item.line})` : ''}` : fallbackItem.name);
+    return {
+      name: name || fallbackItem.name,
+      shadow: item.shadow || fallbackItem.shadow,
+      gift: item.gift || fallbackItem.gift,
+      siddhi: item.siddhi || fallbackItem.siddhi,
+      note: item.note || item.narrative || fallbackItem.note,
+    };
+  };
+
+  const practicalPlan = Array.isArray(synthRaw.practicalActionPlan)
+    ? synthRaw.practicalActionPlan
+    : Array.isArray(raw.life_practices_four_weeks)
+    ? raw.life_practices_four_weeks.map((w: any, idx: number) =>
+        typeof w === 'string'
+          ? w
+          : `Неделя ${w.week || idx + 1}: ${w.theme || ''}. ${w.contemplation || ''} ${w.micro_action || ''}`.trim()
+      )
+    : fallback.finalSynthesis.practicalActionPlan;
+
+  return {
+    formatNotice: raw.formatNotice || fallback.formatNotice,
+    activationSequence: {
+      lifesWork: mapSphere(actRaw.lifesWork || actRaw.lifes_work, fallback.activationSequence.lifesWork),
+      evolution: mapSphere(actRaw.evolution, fallback.activationSequence.evolution),
+      radiance: mapSphere(actRaw.radiance, fallback.activationSequence.radiance),
+      purpose: mapSphere(actRaw.purpose, fallback.activationSequence.purpose),
+      vectorOfRealization: actRaw.vectorOfRealization || actRaw.vector_of_realization || synthRaw.primary_vector || fallback.activationSequence.vectorOfRealization,
+      growthZone: actRaw.growthZone || actRaw.growth_zone || fallback.activationSequence.growthZone,
+      vitalitySource: actRaw.vitalitySource || actRaw.vitality_source || fallback.activationSequence.vitalitySource,
+    },
+    venusSequence: {
+      attraction: mapSphere(venRaw.attraction, fallback.venusSequence.attraction),
+      iq: mapSphere(venRaw.iq, fallback.venusSequence.iq),
+      eq: mapSphere(venRaw.eq, fallback.venusSequence.eq),
+      sq: mapSphere(venRaw.sq, fallback.venusSequence.sq),
+      coreWound: mapSphere(venRaw.coreWound || venRaw.core_wound || venRaw.core, fallback.venusSequence.coreWound),
+      relationshipPatterns: venRaw.relationshipPatterns || venRaw.relationship_patterns || fallback.venusSequence.relationshipPatterns,
+      woundTransformation: venRaw.woundTransformation || venRaw.wound_transformation || fallback.venusSequence.woundTransformation,
+    },
+    pearlSequence: {
+      vocation: mapSphere(pearlRaw.vocation || actRaw.lifesWork || actRaw.lifes_work, fallback.pearlSequence.vocation),
+      culture: mapSphere(pearlRaw.culture, fallback.pearlSequence.culture),
+      brand: mapSphere(pearlRaw.brand, fallback.pearlSequence.brand),
+      pearl: mapSphere(pearlRaw.pearl, fallback.pearlSequence.pearl),
+      monetizationStrategy: pearlRaw.monetizationStrategy || pearlRaw.monetization_strategy || fallback.pearlSequence.monetizationStrategy,
+      collectiveRole: pearlRaw.collectiveRole || pearlRaw.collective_role || fallback.pearlSequence.collectiveRole,
+    },
+    finalSynthesis: {
+      coreVector: synthRaw.coreVector || synthRaw.primary_vector || fallback.finalSynthesis.coreVector,
+      recurringScenarios: synthRaw.recurringScenarios || synthRaw.recurring_scenarios || fallback.finalSynthesis.recurringScenarios,
+      transformationPoint: synthRaw.transformationPoint || synthRaw.transformation_point || fallback.finalSynthesis.transformationPoint,
+      shadowToGiftPath: synthRaw.shadowToGiftPath || synthRaw.shadow_to_gift_path || fallback.finalSynthesis.shadowToGiftPath,
+      practicalActionPlan: practicalPlan,
+    },
+  };
+}
+
 /**
  * Universal dispatcher for generating AI analysis across all 4 studies:
  * - archetype: 12 Archetypes
@@ -446,14 +518,33 @@ export async function generateAnalysis(
       break;
 
     case 'genes': {
-      const gkData = calculationData as GeneKeysCalculatedProfile | undefined;
+      let gkData = calculationData as (GeneKeysCalculatedProfile & Record<string, any>) | undefined;
+      const birthDate = gkData?.input?.date || gkData?.date;
+      const birthTime = gkData?.input?.time || gkData?.time || '12:00';
+      const birthPlace = gkData?.input?.place || gkData?.place || 'Москва';
+
+      if (birthDate && (!gkData?.spheres || Object.keys(gkData.spheres).length === 0)) {
+        try {
+          gkData = computeGeneKeysProfile({
+            date: birthDate,
+            time: birthTime,
+            place: birthPlace,
+            timezone: gkData?.timezone || gkData?.input?.timezone || 'Europe/Moscow',
+            lat: gkData?.lat || gkData?.input?.lat,
+            lng: gkData?.lon || gkData?.lng || gkData?.input?.lng,
+          }) as any;
+        } catch (e) {
+          console.warn('[generateAnalysis] Failed to compute Gene Keys profile on the fly', e);
+        }
+      }
+
       systemPrompt = GENE_KEYS_SYSTEM_PROMPT;
       userPrompt = buildGeneKeysUserPrompt({
         userName,
         birthData: {
-          date: gkData?.input?.date || '1990-01-01',
-          time: gkData?.input?.time || '12:00',
-          city: gkData?.input?.place || 'Москва',
+          date: birthDate || '1990-01-01',
+          time: birthTime,
+          city: birthPlace,
         },
         calculatedSpheres: (gkData?.spheres as unknown as Record<string, { gate: number; line: number; sphereLabel?: string }>) || {},
         answers: answers.map((a) => ({
@@ -530,16 +621,18 @@ export async function generateAnalysis(
       ],
       response_format: { type: 'json_object' },
       temperature: 0.5,
+      max_tokens: 1600,
     });
 
     const content = response.choices?.[0]?.message?.content || '';
 
     try {
       const parsedData = safeParseLlmJson(content);
+      const data = testId === 'genes' ? normalizeGeneKeysResult(parsedData, userName) : parsedData;
       return {
         success: true,
         testId,
-        data: parsedData,
+        data,
         rawText: content,
       };
     } catch {

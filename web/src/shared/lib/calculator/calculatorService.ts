@@ -117,6 +117,12 @@ export function computeGeneKeysProfile(input: BirthInput): GeneKeysCalculatedPro
   };
 
   return {
+    date: dateStr,
+    time: timeStr,
+    place: input.place || 'Москва',
+    timezone: tz,
+    lat,
+    lon: lng,
     spheres: {
       lifes_work: makeSphere('lifeswork', 'Дело жизни', 'Личность Солнце'),
       evolution: makeSphere('evolution', 'Эволюция', 'Личность Земля'),

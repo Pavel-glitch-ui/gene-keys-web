@@ -1860,23 +1860,28 @@ async function renderGeneKeysPages(
     testTitle: params.title || 'Золотой Путь',
   });
 
+  const rawAct = (geneKeysData as any)?.activationSequence || (geneKeysData as any)?.activation_sequence || {};
+  const rawVen = (geneKeysData as any)?.venusSequence || (geneKeysData as any)?.venus_sequence || {};
+  const rawPearl = (geneKeysData as any)?.pearlSequence || (geneKeysData as any)?.pearl_sequence || {};
+  const rawSynth = (geneKeysData as any)?.finalSynthesis || (geneKeysData as any)?.profile_overview || {};
+
   const ai: GeneKeysAIAnalysis = {
     formatNotice: geneKeysData?.formatNotice || fallbackData.formatNotice,
     activationSequence: {
       ...fallbackData.activationSequence,
-      ...(geneKeysData?.activationSequence || {}),
+      ...rawAct,
     },
     venusSequence: {
       ...fallbackData.venusSequence,
-      ...(geneKeysData?.venusSequence || {}),
+      ...rawVen,
     },
     pearlSequence: {
       ...fallbackData.pearlSequence,
-      ...(geneKeysData?.pearlSequence || {}),
+      ...rawPearl,
     },
     finalSynthesis: {
       ...fallbackData.finalSynthesis,
-      ...(geneKeysData?.finalSynthesis || {}),
+      ...rawSynth,
     },
   };
 

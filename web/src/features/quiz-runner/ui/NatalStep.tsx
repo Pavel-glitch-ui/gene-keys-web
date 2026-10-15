@@ -7,10 +7,11 @@ import { Button } from '@/shared/ui/Button';
 import { CalendarBlank, Clock, MapPin, ArrowRight, SpinnerGap, PencilSimple } from '@phosphor-icons/react';
 
 export interface NatalStepProps {
-  onSubmit: (data: NatalChartData) => void;
+  onSubmit: (data: any) => void;
+  testId?: string;
 }
 
-export function NatalStep({ onSubmit }: NatalStepProps) {
+export function NatalStep({ onSubmit, testId }: NatalStepProps) {
   const [date, setDate] = useState('1994-06-15');
   const [time, setTime] = useState('12:00');
   const [cityIndex, setCityIndex] = useState(0);
@@ -26,11 +27,12 @@ export function NatalStep({ onSubmit }: NatalStepProps) {
 
     setLoading(true);
     try {
+      const calculationType = testId === 'genes' ? 'genes' : 'natal';
       const res = await fetch('/api/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'natal',
+          type: calculationType,
           input: {
             date,
             time,

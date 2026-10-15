@@ -18,6 +18,12 @@ export interface GeneKeySpherePlacement {
 }
 
 export interface GeneKeysCalculatedProfile {
+  date?: string;
+  time?: string;
+  place?: string;
+  timezone?: string;
+  lat?: number;
+  lon?: number;
   spheres: {
     lifes_work: GeneKeySpherePlacement;
     evolution: GeneKeySpherePlacement;

@@ -25,45 +25,47 @@ export const GENE_KEYS_SYSTEM_PROMPT = `
    Пиши выразительным, глубоким и уважительным языком на «ты». Без мистического пафоса, фатализма и псевдонаучных диагнозов. Каждая интерпретация должна давать человеку ясность, освобождать от чувства вины и давать практический ориентир для наблюдения.
 
 ФОРМАТ ВЫВОДА (REPORT):
-Верни СТРОГО валидный JSON следующей структуры:
+Верни СТРОГО валидный JSON следующей структуры (все ключи в camelCase):
 {
-  "profile_overview": {
-    "title": "Хологенетический профиль Золотого Пути",
-    "summary": "Глубокий синтез карты с опорой на ответы и фокус пользователя...",
-    "primary_vector": "Главный эволюционный вектор перехода от ключей Тени к Дару"
+  "formatNotice": "Краткая заметка о расчете на основе переданных данных рождения",
+  "activationSequence": {
+    "lifesWork": { "name": "Название ключа и линии (например, 25-й Генный Ключ, Линия 2)", "shadow": "Название тени", "gift": "Название дара", "siddhi": "Название сиддхи", "note": "Краткое раскрытие сути с опорой на ответы" },
+    "evolution": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "...", "note": "..." },
+    "radiance": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "...", "note": "..." },
+    "purpose": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "...", "note": "..." },
+    "vectorOfRealization": "Основной вектор реализации в 1–2 предложениях",
+    "growthZone": "Зона внутреннего роста и точка напряжения",
+    "vitalitySource": "Источник устойчивости и жизненной энергии"
   },
-  "activation_sequence": {
-    "title": "Последовательность Активации · Первичная витальность",
-    "lifes_work": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "Подробная история взаимодействия с ответами..." },
-    "evolution": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "..." },
-    "radiance": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "..." },
-    "purpose": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "..." }
+  "venusSequence": {
+    "attraction": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "..." },
+    "iq": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "..." },
+    "eq": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "..." },
+    "sq": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "..." },
+    "coreWound": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "..." },
+    "relationshipPatterns": "Поведенческие сценарии в отношениях и эмоциональная привязанность",
+    "woundTransformation": "Механизм трансформации базовой травмы в зрелое проявление"
   },
-  "venus_sequence": {
-    "title": "Последовательность Венеры · Открытие сердца",
-    "attraction": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "..." },
-    "iq": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "..." },
-    "eq": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "..." },
-    "sq": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "..." },
-    "core": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "..." }
+  "pearlSequence": {
+    "vocation": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "..." },
+    "culture": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "..." },
+    "brand": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "..." },
+    "pearl": { "name": "...", "shadow": "...", "gift": "...", "siddhi": "..." },
+    "monetizationStrategy": "Естественный способ монетизации и стратегия роста дохода",
+    "collectiveRole": "Роль личности в коллективных системах и служении"
   },
-  "pearl_sequence": {
-    "title": "Последовательность Жемчужины · Проявление и вклад",
-    "culture": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "..." },
-    "pearl": { "key": number, "line": number, "shadow": string, "gift": string, "siddhi": string, "narrative": "..." }
-  },
-  "life_practices_four_weeks": [
-    {
-      "week": 1,
-      "theme": "Тема недели созерцания...",
-      "sphere_focus": "Ключевые сферы...",
-      "contemplation": "Главный созерцательный вопрос дня...",
-      "micro_action": "Простое практическое микро-действие..."
-    },
-    { "week": 2, "theme": "...", "sphere_focus": "...", "contemplation": "...", "micro_action": "..." },
-    { "week": 3, "theme": "...", "sphere_focus": "...", "contemplation": "...", "micro_action": "..." },
-    { "week": 4, "theme": "...", "sphere_focus": "...", "contemplation": "...", "micro_action": "..." }
-  ]
+  "finalSynthesis": {
+    "coreVector": "Главный эволюционный вектор перехода от Тени к Дару",
+    "recurringScenarios": "Повторяющиеся жизненные сценарии из ответов пользователя",
+    "transformationPoint": "Ключевая точка внутренней трансформации",
+    "shadowToGiftPath": "Мост перехода из состояния Тени в состояние Дара",
+    "practicalActionPlan": [
+      "Неделя 1 (Наблюдение): Конкретная созерцательная практика...",
+      "Неделя 2 (Принятие): Практический микро-шаг...",
+      "Неделя 3 (Проявление Дара): Действие в работе или отношениях...",
+      "Неделя 4 (Интеграция): Закрепление нового способа действия..."
+    ]
+  }
 }
 `.trim();
 

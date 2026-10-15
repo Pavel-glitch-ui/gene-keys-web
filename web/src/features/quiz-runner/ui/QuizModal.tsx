@@ -34,7 +34,7 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<UserAnswer[]>([]);
   const [profile, setProfile] = useState<UserProfile>({ name: '', focus: 'Общий портрет' });
-  const [natalChart, setNatalChart] = useState<NatalChartData | undefined>(undefined);
+  const [natalChart, setNatalChart] = useState<any>(undefined);
   const [hasDraft, setHasDraft] = useState(false);
   const [generatingStepIndex, setGeneratingStepIndex] = useState(0);
 
@@ -118,6 +118,8 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
 
   const currentQ = test.questions[step];
 
+  const requiresNatal = test.kind === 'natal' || test.id === 'genes';
+
   // Validation if current question is ready to move forward
   const isCurrentStepReady = (): boolean => {
     if (!currentQ) return false;
@@ -131,14 +133,14 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
 
   const handleIntakeSubmit = (userProfile: UserProfile) => {
     setProfile(userProfile);
-    if (test.kind === 'natal' && !natalChart) {
+    if (requiresNatal && !natalChart) {
       setPhase('natal');
     } else {
       setPhase('questions');
     }
   };
 
-  const handleNatalSubmit = (data: NatalChartData) => {
+  const handleNatalSubmit = (data: any) => {
     setNatalChart(data);
     setPhase('questions');
   };
@@ -166,7 +168,7 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
   const handleBack = () => {
     if (step > 0) {
       setStep(step - 1);
-    } else if (test.kind === 'natal') {
+    } else if (requiresNatal) {
       setPhase('natal');
     } else {
       setPhase('intake');
@@ -225,7 +227,7 @@ export function QuizModal({ test, isOpen, onClose, onComplete }: QuizModalProps)
 
       {/* Natal Chart Form Phase */}
       {phase === 'natal' && (
-        <NatalStep onSubmit={handleNatalSubmit} />
+        <NatalStep onSubmit={handleNatalSubmit} testId={test.id} />
       )}
 
       {/* Questions Stepper Phase */}

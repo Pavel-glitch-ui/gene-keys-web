@@ -202,12 +202,17 @@ export function createBot(): Bot {
   return bot;
 }
 
+let prodBotInstance: Bot | null = null;
+
 /**
  * Returns a singleton instance of the Telegram Bot for serverless / Next.js environments.
  */
 export function getBot(): Bot {
   if (process.env.NODE_ENV === 'production') {
-    return createBot();
+    if (!prodBotInstance) {
+      prodBotInstance = createBot();
+    }
+    return prodBotInstance;
   }
 
   if (!global.__tg_bot_instance) {

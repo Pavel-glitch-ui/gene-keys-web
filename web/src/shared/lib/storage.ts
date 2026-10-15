@@ -26,17 +26,16 @@ export function saveActiveReportIdToStorage(id: string | null): void {
 }
 
 export function loadReportsFromStorage(): CompletedReport[] {
-  if (typeof window === 'undefined') return MOCK_REPORTS;
+  if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_REPORTS));
-      return MOCK_REPORTS;
+      return [];
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : MOCK_REPORTS;
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return MOCK_REPORTS;
+    return [];
   }
 }
 

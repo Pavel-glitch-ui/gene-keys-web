@@ -1,5 +1,6 @@
 import type { TestSchema } from '@/entities/test/model/types';
 import type { NatalChartData } from '@/entities/natal/model/types';
+import type { GeneKeysCalculatedProfile } from '@/shared/lib/calculator/types';
 
 export type UserAnswer = number | { text: string; skipped?: boolean } | null;
 
@@ -55,6 +56,6 @@ export interface CompletedReport {
   answers: UserAnswer[];
   scores: number[];
   profile?: UserProfile;
-  natal?: NatalChartData;
+  natal?: NatalChartData | GeneKeysCalculatedProfile | Record<string, any>;
   premium?: boolean;
 }
