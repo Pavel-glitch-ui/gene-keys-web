@@ -442,12 +442,12 @@ export function normalizeGeneKeysResult(raw: any, userName: string = 'Иссле
   const practicalPlan = Array.isArray(synthRaw.practicalActionPlan)
     ? synthRaw.practicalActionPlan
     : Array.isArray(raw.life_practices_four_weeks)
-    ? raw.life_practices_four_weeks.map((w: any, idx: number) =>
+      ? raw.life_practices_four_weeks.map((w: any, idx: number) =>
         typeof w === 'string'
           ? w
           : `Неделя ${w.week || idx + 1}: ${w.theme || ''}. ${w.contemplation || ''} ${w.micro_action || ''}`.trim()
       )
-    : fallback.finalSynthesis.practicalActionPlan;
+      : fallback.finalSynthesis.practicalActionPlan;
 
   return {
     formatNotice: raw.formatNotice || fallback.formatNotice,
@@ -630,7 +630,7 @@ export async function generateAnalysis(
       ],
       response_format: { type: 'json_object' },
       temperature: 0.5,
-      max_tokens: 1600,
+      max_tokens: 5000,
     });
 
     const content = response.choices?.[0]?.message?.content || '';
@@ -643,10 +643,10 @@ export async function generateAnalysis(
         response.model || OPENAI_MODEL,
         usage
           ? {
-              prompt: usage.prompt_tokens,
-              completion: usage.completion_tokens,
-              total: usage.total_tokens,
-            }
+            prompt: usage.prompt_tokens,
+            completion: usage.completion_tokens,
+            total: usage.total_tokens,
+          }
           : undefined,
         {
           finishReason: response.choices?.[0]?.finish_reason,

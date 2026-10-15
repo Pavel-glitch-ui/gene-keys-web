@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || 'dummy-openai-key',
-  timeout: 25000,
+  timeout: 45000,
   maxRetries: 0,
 });
 

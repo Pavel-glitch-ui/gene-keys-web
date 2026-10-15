@@ -14,8 +14,9 @@ export const ARCHETYPE_SYSTEM_PROMPT = `
 2. СЦЕНАРНЫЙ АНАЛИЗ ПЕРСОНАЖА:
    Смотри на человека как на ключевого героя книги/фильма. Определи его главную ценность, внутренний конфликт (например, Творец vs Правитель, Искатель vs Обычный Человек), ключевое препятствие (тень) и публичную роль, в которую аудитория верит без сомнений.
 
-3. ЯЗЫК И СТИЛЬ:
-   Пиши живым, емким, кинематографичным русским языком. Без канцелярита, без заезженных инфоцыганских штампов и без пустой комплиментарности. Вся характеристика должна быть уважительной, объективной и применимой на практике.
+3. ЯЗЫК, ОБЪЕМ И СТИЛЬ:
+   Пиши живым, емким, кинематографичным русским языком. Без канцелярита, без заезженных инфоцыганских штампов и без пустой комплиментарности.
+   ОБЪЕМ РАЗДЕЛОВ: Каждый раздел в \`sections\` должен содержать ровно 2–3 емких, плотных предложения без воды и размытых рассуждений. Формулируй концентрированно, чтобы охватить все 12 разделов книги бренда без потери глубины.
 
 4. СТРУКТУРА КНИГИ (12 РАЗДЕЛОВ):
    Разбей текстовый разбор на 12 полных, содержательных разделов в массиве \`sections\`:
@@ -113,16 +114,20 @@ export interface ArchetypePromptInput {
 }
 
 export function buildArchetypeUserPrompt(input: ArchetypePromptInput): string {
-  return JSON.stringify({
-    stage: input.stage || 'report',
-    user_name: input.userName || 'Искатель',
-    answers: input.answers.map((a, idx) => ({
-      index: idx + 1,
-      id: a.questionId || `q_${idx + 1}`,
-      question: a.questionText,
-      selected_options: a.selectedOptions || [],
-      custom_reflection: a.customText || null,
-      skipped: !!a.isSkipped,
-    })),
-  }, null, 2);
+  const userName = input.userName || 'Искатель';
+  const formattedAnswers = input.answers
+    .filter((a) => !a.isSkipped)
+    .map((a, idx) => {
+      const selected = (a.selectedOptions || []).filter(Boolean).join(', ');
+      const reflection = a.customText ? ` [Комментарий: ${a.customText}]` : '';
+      const answerVal = selected || a.customText || '—';
+      return `${idx + 1}. Вопрос: «${a.questionText}» -> Ответ: ${answerVal}${selected && a.customText ? reflection : ''}`;
+    })
+    .join('\n');
+
+  return `Имя пользователя: ${userName}
+Ответы на исследование (${input.answers.length} вопросов):
+${formattedAnswers}
+
+Сформируй полную персональную Книгу Бренда (все 12 разделов в \`sections\`), карточку персонажа и 4-недельный план в валидном формате JSON.`.trim();
 }
