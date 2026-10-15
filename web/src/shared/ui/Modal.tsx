@@ -68,7 +68,7 @@ export function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 16 }}
             transition={{ type: 'spring', damping: 30, stiffness: 350 }}
-            className={`relative w-full ${maxWidthClass} max-h-[92vh] overflow-y-auto bg-white dark:bg-black rounded-2xl border border-zinc-200/80 dark:border-white/15 p-5 sm:p-8 z-10 my-auto text-zinc-900 dark:text-white shadow-2xl transition-colors`}
+            className={`relative w-full ${maxWidthClass} max-h-[90dvh] overflow-y-auto overscroll-contain bg-white dark:bg-black rounded-2xl border border-zinc-200/80 dark:border-white/15 p-4 sm:p-8 z-10 my-auto text-zinc-900 dark:text-white shadow-2xl transition-colors`}
           >
             {/* Mobile-friendly touch target close button */}
             <button

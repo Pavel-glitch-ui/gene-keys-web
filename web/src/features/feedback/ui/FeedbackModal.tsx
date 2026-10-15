@@ -94,26 +94,28 @@ export function FeedbackModal({
           <label className="block text-xs font-semibold text-zinc-900 dark:text-white mb-2">
             1. Ваша общая оценка исследования:
           </label>
-          <div className="flex items-center gap-2">
-            {[1, 2, 3, 4, 5].map((star) => {
-              const active = star <= rating;
-              return (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setRating(star)}
-                  className="p-1 text-2xl transition-transform hover:scale-110 cursor-pointer"
-                  aria-label={`Оценка ${star}`}
-                >
-                  <Star
-                    size={28}
-                    weight={active ? 'fill' : 'regular'}
-                    className={active ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'}
-                  />
-                </button>
-              );
-            })}
-            <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium ml-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-0.5 sm:gap-1">
+              {[1, 2, 3, 4, 5].map((star) => {
+                const active = star <= rating;
+                return (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    className="p-1 text-2xl transition-transform hover:scale-110 cursor-pointer"
+                    aria-label={`Оценка ${star}`}
+                  >
+                    <Star
+                      size={28}
+                      weight={active ? 'fill' : 'regular'}
+                      className={active ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+            <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
               {RATING_LABELS[rating]}
             </span>
           </div>
@@ -192,7 +194,7 @@ export function FeedbackModal({
         </label>
 
         {/* Submit button */}
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-2">
           <Button variant="ghost" size="sm" type="button" onClick={onClose} disabled={isSubmitting}>
             Отмена
           </Button>
@@ -202,7 +204,7 @@ export function FeedbackModal({
             size="md"
             type="submit"
             disabled={!isValid || isSubmitting}
-            className="gap-2"
+            className="gap-2 min-h-[44px]"
           >
             {isSubmitting ? (
               <>

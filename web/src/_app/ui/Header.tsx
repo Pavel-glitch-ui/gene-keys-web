@@ -55,34 +55,41 @@ export function Header() {
         <ThemeToggle />
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer Menu & Backdrop */}
       {mobileMenuOpen && (
-        <div className="fixed inset-x-0 top-[61px] bg-[var(--surface-1)] text-[var(--foreground)] p-5 border-b border-[var(--border)] flex flex-col gap-2.5 md:hidden shadow-2xl z-40 transition-colors">
-          <Link
-            href="/"
+        <>
+          <div
+            className="fixed inset-0 top-[61px] bg-black/50 backdrop-blur-xs z-30 md:hidden"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--surface-2)] text-sm font-medium text-[var(--foreground)] transition-colors"
-          >
-            <Compass size={18} className="text-purple-600 dark:text-purple-400" />
-            <span>Выбрать тест</span>
-          </Link>
-          <Link
-            href="/results/history"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--surface-2)] text-sm font-medium text-[var(--foreground)] transition-colors"
-          >
-            <ClockCounterClockwise size={18} className="text-purple-600 dark:text-purple-400" />
-            <span>История разборов</span>
-          </Link>
-          <Link
-            href="/about"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--surface-2)] text-sm font-medium text-[var(--foreground)] transition-colors"
-          >
-            <Info size={18} className="text-purple-600 dark:text-purple-400" />
-            <span>Как это работает</span>
-          </Link>
-        </div>
+            aria-hidden="true"
+          />
+          <div className="fixed inset-x-0 top-[61px] bg-[var(--surface-1)] text-[var(--foreground)] p-5 border-b border-[var(--border)] flex flex-col gap-2.5 md:hidden shadow-2xl z-40 transition-colors">
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--surface-2)] text-sm font-medium text-[var(--foreground)] transition-colors"
+            >
+              <Compass size={18} className="text-purple-600 dark:text-purple-400" />
+              <span>Выбрать тест</span>
+            </Link>
+            <Link
+              href="/results/history"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--surface-2)] text-sm font-medium text-[var(--foreground)] transition-colors"
+            >
+              <ClockCounterClockwise size={18} className="text-purple-600 dark:text-purple-400" />
+              <span>История разборов</span>
+            </Link>
+            <Link
+              href="/about"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--surface-2)] text-sm font-medium text-[var(--foreground)] transition-colors"
+            >
+              <Info size={18} className="text-purple-600 dark:text-purple-400" />
+              <span>Как это работает</span>
+            </Link>
+          </div>
+        </>
       )}
     </header>
   );

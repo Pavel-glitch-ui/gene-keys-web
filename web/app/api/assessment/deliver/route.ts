@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateAssessmentPdf } from '@/src/shared/lib/pdf/generatePdf';
 import { generateAnalysis, getFallbackAnalysisForTest } from '@/src/shared/lib/ai/generateAnalysis';
+import { logAIDelivery } from '@/src/shared/lib/ai/aiLogger';
 
 export const maxDuration = 60;
 
@@ -82,7 +83,12 @@ export async function POST(req: NextRequest) {
       testTitle: testTitle || 'Генные Ключи',
     });
 
+    const pipelineStart = Date.now();
+    let aiSuccess = false;
+    let usedFallback = false;
     let aiAnalysisResult: any = null;
+
+    const aiStart = Date.now();
     try {
       const result = await generateAnalysis({
         testId,
@@ -91,19 +97,18 @@ export async function POST(req: NextRequest) {
         calculationData: natal,
       });
 
+      aiSuccess = result.success;
+      usedFallback = Boolean(result.error);
       aiAnalysisResult = result.data || getFallbackAnalysisForTest(testId, profile?.name);
-      console.log('[Assessment Deliver] AI analysis generated successfully', {
-        testId,
-        success: result.success,
-        hasData: Boolean(result.data),
-      });
     } catch (err) {
       console.error('[Assessment Deliver] AI generation failed with exception', err);
       aiAnalysisResult = getFallbackAnalysisForTest(testId, profile?.name);
+      aiSuccess = false;
+      usedFallback = true;
     }
+    const aiDurationMs = Date.now() - aiStart;
 
-    console.log('[Assessment Deliver] Starting PDF generation');
-
+    const pdfStart = Date.now();
     let pdfBytes;
     try {
       pdfBytes = await generateAssessmentPdf({
@@ -117,11 +122,23 @@ export async function POST(req: NextRequest) {
         aiAnalysis: testId === 'genes' ? aiAnalysisResult : undefined,
         analysisData: aiAnalysisResult,
       });
-      console.log('[Assessment Deliver] PDF generated successfully', {
-        bytesLength: pdfBytes?.length || 0,
-      });
     } catch (pdfErr) {
       console.error('[Assessment Deliver] PDF generation failed', pdfErr);
+      const pdfDurationMs = Date.now() - pdfStart;
+      logAIDelivery({
+        chatId,
+        testId,
+        testTitle,
+        profileName: profile?.name,
+        aiDurationMs,
+        pdfDurationMs,
+        totalDurationMs: Date.now() - pipelineStart,
+        pdfBytes: 0,
+        aiSuccess,
+        usedFallback,
+        tgSuccess: false,
+        error: pdfErr instanceof Error ? pdfErr.message : 'PDF generation failed',
+      });
       return NextResponse.json(
         {
           error: pdfErr instanceof Error ? pdfErr.message : 'Не удалось сгенерировать PDF.',
@@ -130,13 +147,9 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
+    const pdfDurationMs = Date.now() - pdfStart;
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    console.log('[Assessment Deliver] Telegram bot config check', {
-      hasBotToken: Boolean(botToken),
-      apiRoot: process.env.TELEGRAM_API_ROOT || 'https://api.telegram.org',
-      chatId,
-    });
 
     if (botToken) {
       const formData = new FormData();
@@ -162,11 +175,7 @@ export async function POST(req: NextRequest) {
       const apiRoot = (process.env.TELEGRAM_API_ROOT || 'https://api.telegram.org').replace(/\/+$/, '');
       const sendDocumentUrl = `${apiRoot}/bot${botToken}/sendDocument`;
 
-      console.log('[Assessment Deliver] Sending PDF to Telegram', {
-        sendDocumentUrl,
-        fileName,
-      });
-
+      const tgStart = Date.now();
       try {
         const tgResponse = await fetch(sendDocumentUrl, {
           method: 'POST',
@@ -174,15 +183,25 @@ export async function POST(req: NextRequest) {
         });
 
         const tgResult = await tgResponse.json();
-        console.log('[Assessment Deliver] Telegram response', {
-          status: tgResponse.status,
-          ok: tgResult?.ok,
-          description: tgResult?.description,
-          result: tgResult?.result ? 'present' : 'missing',
-        });
+        const tgDurationMs = Date.now() - tgStart;
+        const totalDurationMs = Date.now() - pipelineStart;
 
         if (!tgResponse.ok || !tgResult.ok) {
-          console.error('[Assessment Deliver] Telegram API error details:', tgResult);
+          logAIDelivery({
+            chatId,
+            testId,
+            testTitle,
+            profileName: profile?.name,
+            aiDurationMs,
+            pdfDurationMs,
+            tgDurationMs,
+            totalDurationMs,
+            pdfBytes: pdfBytes.length,
+            aiSuccess,
+            usedFallback,
+            tgSuccess: false,
+            error: tgResult?.description || `Telegram HTTP ${tgResponse.status}`,
+          });
           return NextResponse.json(
             {
               error:
@@ -194,6 +213,22 @@ export async function POST(req: NextRequest) {
           );
         }
 
+        logAIDelivery({
+          chatId,
+          testId,
+          testTitle,
+          profileName: profile?.name,
+          aiDurationMs,
+          pdfDurationMs,
+          tgDurationMs,
+          totalDurationMs,
+          pdfBytes: pdfBytes.length,
+          aiSuccess,
+          usedFallback,
+          tgSuccess: true,
+          tgMessageId: tgResult.result?.message_id,
+        });
+
         return NextResponse.json({
           success: true,
           delivered: true,
@@ -201,7 +236,23 @@ export async function POST(req: NextRequest) {
           messageId: tgResult.result?.message_id,
         });
       } catch (tgErr) {
-        console.error('[Assessment Deliver] Telegram delivery exception', tgErr);
+        const tgDurationMs = Date.now() - tgStart;
+        const totalDurationMs = Date.now() - pipelineStart;
+        logAIDelivery({
+          chatId,
+          testId,
+          testTitle,
+          profileName: profile?.name,
+          aiDurationMs,
+          pdfDurationMs,
+          tgDurationMs,
+          totalDurationMs,
+          pdfBytes: pdfBytes.length,
+          aiSuccess,
+          usedFallback,
+          tgSuccess: false,
+          error: tgErr instanceof Error ? tgErr.message : 'Telegram network exception',
+        });
         return NextResponse.json(
           {
             error: tgErr instanceof Error ? tgErr.message : 'Не удалось отправить PDF в Telegram.',
@@ -212,9 +263,19 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    console.log(
-      `[TELEGRAM BOT TEST MODE] AI PDF generated (${pdfBytes.length} bytes) for Chat ID: ${chatId}`
-    );
+    logAIDelivery({
+      chatId,
+      testId,
+      testTitle,
+      profileName: profile?.name,
+      aiDurationMs,
+      pdfDurationMs,
+      totalDurationMs: Date.now() - pipelineStart,
+      pdfBytes: pdfBytes.length,
+      aiSuccess,
+      usedFallback,
+      tgSuccess: true,
+    });
 
     return NextResponse.json({
       success: true,

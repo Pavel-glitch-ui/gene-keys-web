@@ -76,7 +76,7 @@ export function ResultsPage() {
   return (
     <div className="flex flex-col gap-8">
       {/* Top action row */}
-      <div className="flex items-center justify-between text-xs text-stone-500">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-stone-500">
         <Link href="/" className="inline-flex items-center gap-1.5 hover:text-purple-900 dark:hover:text-purple-300 transition-colors">
           <ArrowLeft size={14} />
           <span>К каталогу тестов</span>

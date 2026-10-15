@@ -355,23 +355,23 @@ export function CheckoutPage() {
         </div>
 
         {/* Document Status Banner */}
-        <div className="p-4 rounded-xl bg-zinc-50 dark:bg-black border border-zinc-200/80 dark:border-white/10 flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400 transition-colors">
+        <div className="p-4 rounded-xl bg-zinc-50 dark:bg-black border border-zinc-200/80 dark:border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400 transition-colors">
           <div className="flex items-center gap-2">
-            <LockKey size={16} weight="fill" className="text-purple-600 dark:text-purple-400" />
+            <LockKey size={16} weight="fill" className="text-purple-600 dark:text-purple-400 shrink-0" />
             <span>Документ защищен и готов к прямой отправке в Telegram</span>
           </div>
-          <span className="font-mono text-[11px] text-purple-600 dark:text-purple-300">ФОРМАТ PDF</span>
+          <span className="font-mono text-[11px] text-purple-600 dark:text-purple-300 shrink-0">ФОРМАТ PDF</span>
         </div>
       </div>
 
       {/* Delivery / Action Card */}
       <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-black border border-zinc-200/80 dark:border-white/10 shadow-sm dark:shadow-none flex flex-col gap-6 transition-colors">
         <div>
-          <div className="flex items-baseline justify-between mb-2">
+          <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1.5 sm:gap-4 mb-2">
             <h3 className="text-xl font-bold text-zinc-900 dark:text-white">
               Получение отчета в Telegram
             </h3>
-            <div className="flex items-baseline gap-2">
+            <div className="flex items-baseline gap-2 shrink-0">
               <span className="text-xs text-zinc-400 line-through">1 490 ₽</span>
               <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
                 0 ₽ (Бесплатно за отзыв)

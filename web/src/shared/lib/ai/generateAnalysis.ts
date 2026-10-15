@@ -1,5 +1,6 @@
 import { openai, OPENAI_MODEL } from './openai';
 import { safeParseLlmJson } from './jsonHelper';
+import { createAITracer } from './aiLogger';
 import {
   ARCHETYPE_SYSTEM_PROMPT,
   buildArchetypeUserPrompt,
@@ -498,6 +499,13 @@ export async function generateAnalysis(
 ): Promise<GeneratedAnalysisResult> {
   const { testId, userName, answers, calculationData } = payload;
   const apiKey = process.env.OPENAI_API_KEY;
+  const tracer = createAITracer(testId, {
+    userName,
+    answersCount: answers.length,
+    hasCalculationData: Boolean(calculationData),
+  });
+
+  tracer.logStart(OPENAI_MODEL);
 
   let systemPrompt = '';
   let userPrompt = '';
@@ -601,6 +609,7 @@ export async function generateAnalysis(
 
   // If no API key configured, use test-specific fallback directly
   if (!apiKey || apiKey === 'dummy-openai-key') {
+    tracer.logFallback('No OPENAI_API_KEY configured');
     const fallbackData = getFallbackAnalysisForTest(testId, userName);
     if (fallbackData) {
       return {
@@ -625,20 +634,38 @@ export async function generateAnalysis(
     });
 
     const content = response.choices?.[0]?.message?.content || '';
+    const usage = response.usage;
 
     try {
       const parsedData = safeParseLlmJson(content);
       const data = testId === 'genes' ? normalizeGeneKeysResult(parsedData, userName) : parsedData;
+      tracer.logSuccess(
+        response.model || OPENAI_MODEL,
+        usage
+          ? {
+              prompt: usage.prompt_tokens,
+              completion: usage.completion_tokens,
+              total: usage.total_tokens,
+            }
+          : undefined,
+        {
+          finishReason: response.choices?.[0]?.finish_reason,
+          contentLength: content.length,
+          topLevelKeys: Object.keys(data || {}),
+        }
+      );
       return {
         success: true,
         testId,
         data,
         rawText: content,
       };
-    } catch {
-      console.warn(`[AI Parsing Warning] Failed to parse JSON for test ${testId}, checking fallback`);
+    } catch (parseErr) {
+      const snippet = content.slice(0, 120) + (content.length > 240 ? ' ... ' + content.slice(-120) : '');
+      tracer.logFailed(parseErr, OPENAI_MODEL, { snippet, contentLength: content.length });
       const fallbackData = getFallbackAnalysisForTest(testId, userName);
       if (fallbackData) {
+        tracer.logFallback('Activated fallback due to JSON parse failure', parseErr);
         return {
           success: true,
           testId,
@@ -655,23 +682,22 @@ export async function generateAnalysis(
       };
     }
   } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : 'Ошибка вызова AI API';
-    console.error(`[AI API Error for ${testId}]:`, errorMsg);
+    const errorInfo = tracer.logFailed(err, OPENAI_MODEL);
     const fallbackData = getFallbackAnalysisForTest(testId, userName);
     if (fallbackData) {
-      console.info(`[AI Fallback Activated for ${testId}]`);
+      tracer.logFallback(`Activated fallback due to ${errorInfo.type}: ${errorInfo.message}`, err);
       return {
         success: true,
         testId,
         data: fallbackData,
-        error: errorMsg,
+        error: errorInfo.message,
       };
     }
     return {
       success: false,
       testId,
       data: null,
-      error: errorMsg,
+      error: errorInfo.message,
     };
   }
 }

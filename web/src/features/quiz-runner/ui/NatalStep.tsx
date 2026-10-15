@@ -94,9 +94,8 @@ export function NatalStep({ onSubmit, testId }: NatalStepProps) {
           />
         </div>
       </div>
-
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2">
           <label className="flex items-center gap-1.5 text-xs font-semibold text-[var(--foreground)]">
             <MapPin size={15} className="text-[var(--accent-purple)]" />
             <span>Город рождения</span>
@@ -124,7 +123,7 @@ export function NatalStep({ onSubmit, testId }: NatalStepProps) {
               placeholder="Введите город (например: Самара, Россия)"
               className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent-purple)] transition-colors"
             />
-            <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] px-1">
+            <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-[var(--text-muted)] px-1">
               <span>Координаты и часовой пояс определятся автоматически</span>
               <button
                 type="button"
