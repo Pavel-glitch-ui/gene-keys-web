@@ -4,3 +4,5 @@ out/
 build/
 .env*
 !.env.example
+credentials.json
+*credentials*.json

@@ -25,6 +25,8 @@ build/
 # misc
 .DS_Store
 *.pem
+credentials.json
+*credentials*.json
 
 # debug
 npm-debug.log*

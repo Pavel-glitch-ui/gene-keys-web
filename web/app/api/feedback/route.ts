@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { appendFeedbackRow, isGoogleSheetsConfigured } from '@/src/shared/lib/google-sheets';
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
       chatId: chatId || 'anonymous',
       testId: testId || 'unknown',
       testTitle: testTitle || 'Без названия',
-      rating: rating || 5,
+      rating: typeof rating === 'number' ? rating : 5,
       tags: Array.isArray(tags) ? tags : [],
       comment: comment.trim(),
       custdevReady: Boolean(custdevReady),
@@ -25,30 +26,20 @@ export async function POST(req: NextRequest) {
 
     console.log('[USER FEEDBACK RECEIVED]:', JSON.stringify(feedbackEntry, null, 2));
 
-    // If bot token is configured and ADMIN_CHAT_ID or chatId is provided, we can log to TG
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
-
-    if (botToken && adminChatId) {
-      const text =
-        `⭐️ *Новый отзыв о тестировании!*\n\n` +
-        `👤 *Chat ID:* \`${chatId}\`\n` +
-        `📋 *Тест:* ${testTitle}\n` +
-        `🌟 *Оценка:* ${rating} / 5\n` +
-        `🏷 *Теги:* ${tags.join(', ') || '—'}\n` +
-        `💬 *Отзыв:* ${comment.trim()}\n` +
-        `🤝 *CustDev готов:* ${custdevReady ? 'Да' : 'Нет'}`;
-
-      const apiRoot = (process.env.TELEGRAM_API_ROOT || 'https://api.telegram.org').replace(/\/+$/, '');
-      fetch(`${apiRoot}/bot${botToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: adminChatId,
-          text,
-          parse_mode: 'Markdown',
-        }),
-      }).catch((e) => console.error('[Telegram Admin Notify Error]:', e));
+    // Append to Google Sheets
+    if (isGoogleSheetsConfigured()) {
+      try {
+        const result = await appendFeedbackRow(feedbackEntry);
+        console.log(`[Google Sheets] Feedback successfully saved to sheet "${result.sheetName}" at range ${result.updatedRange}`);
+      } catch (sheetsError: unknown) {
+        console.error('[Google Sheets Append Error]:', sheetsError);
+        // We log the error but still allow the user to proceed so the UX is not blocked
+      }
+    } else {
+      console.warn(
+        '[Google Sheets Warning] Google Sheets integration is not fully configured. ' +
+        'Check that GOOGLE_SHEETS_SPREADSHEET_ID is set in .env and credentials.json is present.'
+      );
     }
 
     return NextResponse.json({
