@@ -84,7 +84,6 @@ export function buildSubscriptionKeyboard(inviteLink: string): InlineKeyboard {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
   var __tg_bot_instance: Bot | undefined;
 }
 

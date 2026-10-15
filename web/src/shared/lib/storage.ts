@@ -1,5 +1,4 @@
 import type { CompletedReport } from '@/entities/report/model/types';
-import { MOCK_REPORTS } from '@/shared/mock-data/sample-reports';
 
 const STORAGE_KEY = 'ten-reports-v2';
 const DRAFT_PREFIX = 'ten-interview-draft-';

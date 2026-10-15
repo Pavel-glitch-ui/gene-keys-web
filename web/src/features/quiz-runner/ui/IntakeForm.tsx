@@ -23,7 +23,7 @@ const FOCUS_OPTIONS = [
   'Опоры и восстановление',
 ];
 
-export function IntakeForm({ test, hasDraft, onResumeDraft, onSubmit, initialProfile }: IntakeFormProps) {
+export function IntakeForm({ test: _test, hasDraft, onResumeDraft, onSubmit, initialProfile }: IntakeFormProps) {
   const { leadName } = useTelegramContext();
   const [name, setName] = useState(initialProfile?.name || leadName || '');
   const [focus, setFocus] = useState(initialProfile?.focus || FOCUS_OPTIONS[0]);

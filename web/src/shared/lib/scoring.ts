@@ -45,7 +45,7 @@ export function buildDetailedReport(
   answers: UserAnswer[],
   scores: number[],
   profile?: UserProfile,
-  natal?: NatalChartData
+  _natal?: NatalChartData | unknown
 ): DetailedReportData {
   const top = Math.max(...scores);
   const low = Math.min(...scores);

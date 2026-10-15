@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import { CITIES_MOCK, resolveCityData } from '@/shared/mock-data/cities';
-import type { NatalChartData } from '@/entities/natal/model/types';
 import { Button } from '@/shared/ui/Button';
-import { CalendarBlank, Clock, MapPin, ArrowRight, SpinnerGap, PencilSimple } from '@phosphor-icons/react';
+import { CalendarBlank, Clock, MapPin, ArrowRight, SpinnerGap } from '@phosphor-icons/react';
 
 export interface NatalStepProps {
   onSubmit: (data: any) => void;

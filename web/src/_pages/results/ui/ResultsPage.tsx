@@ -6,6 +6,7 @@ import { useAppState } from '@/src/_app/providers/AppStateProvider';
 import { buildDetailedReport } from '@/shared/lib/scoring';
 import { DimensionCard, SynthesisCard, FourWeekPlan } from '@/src/entities/report';
 import { NatalWheelSvg, PlanetList } from '@/src/entities/natal';
+import type { NatalChartData } from '@/entities/natal/model/types';
 import { ScoreBar } from '@/shared/ui/ScoreBar';
 import { PdfDownloadButton } from '@/src/features/report-export';
 import { Button } from '@/shared/ui/Button';
@@ -20,8 +21,18 @@ import {
   ClockCounterClockwise,
 } from '@phosphor-icons/react';
 
+function isNatalChartData(data: unknown): data is NatalChartData {
+  return Boolean(
+    data &&
+    typeof data === 'object' &&
+    'planets' in data &&
+    Array.isArray((data as NatalChartData).planets) &&
+    'ascendant' in data
+  );
+}
+
 export function ResultsPage() {
-  const { activeReport, reportsHistory, startTest } = useAppState();
+  const { activeReport, reportsHistory } = useAppState();
   const [activeTab, setActiveTab] = useState<'text' | 'chart' | 'map'>('text');
   const [qaOpen, setQaOpen] = useState(false);
 
@@ -206,7 +217,7 @@ export function ResultsPage() {
       {/* Tab 2: Visual Chart & Natal Wheel */}
       {activeTab === 'chart' && (
         <div className="flex flex-col gap-8">
-          {activeReport.natal && (
+          {isNatalChartData(activeReport.natal) && (
             <div className="p-6 sm:p-8 rounded-3xl bg-white/80 dark:bg-stone-900/80 border border-purple-200/60 dark:border-purple-800/40 flex flex-col items-center gap-6">
               <div className="text-center">
                 <h3 className="font-serif text-2xl font-bold text-stone-900 dark:text-white">

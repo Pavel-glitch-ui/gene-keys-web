@@ -6,7 +6,6 @@ import { useAppState } from '@/src/_app/providers/AppStateProvider';
 import { useTelegramContext } from '@/src/shared/lib/telegram';
 import { useToast } from '@/src/shared/ui/Toast';
 import { Button } from '@/src/shared/ui/Button';
-import { Badge } from '@/src/shared/ui/Badge';
 import { FeedbackModal, type FeedbackData } from '@/src/features/feedback';
 import { AnimatePresence, motion } from 'framer-motion';
 import {

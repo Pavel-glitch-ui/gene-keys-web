@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Modal } from '@/src/shared/ui/Modal';
 import { Button } from '@/src/shared/ui/Button';
-import { Star, CheckCircle, WarningCircle, PaperPlaneTilt, Spinner } from '@phosphor-icons/react';
+import { Star, WarningCircle, PaperPlaneTilt, Spinner } from '@phosphor-icons/react';
 
 export interface FeedbackData {
   rating: number;
