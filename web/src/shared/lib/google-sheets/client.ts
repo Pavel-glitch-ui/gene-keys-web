@@ -16,7 +16,17 @@ let cachedSheetsClient: sheets_v4.Sheets | null = null;
  * and environment variables.
  */
 function resolveCredentials(): ServiceAccountCredentials | null {
-  // 1. Check direct JSON string in environment variable
+  // 1. Check base64-encoded JSON in environment variable (recommended for Vercel)
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_BASE64) {
+    try {
+      const decoded = Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf-8');
+      return JSON.parse(decoded) as ServiceAccountCredentials;
+    } catch (e) {
+      console.warn('[Google Sheets] Failed to parse GOOGLE_SERVICE_ACCOUNT_BASE64:', e);
+    }
+  }
+
+  // 2. Check direct JSON string in environment variable
   if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
     try {
       return JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON) as ServiceAccountCredentials;

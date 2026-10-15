@@ -2,7 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import { google } from 'googleapis';
 
-const credentialsPath = path.resolve(process.cwd(), '../credentials.json');
+const credentialsPath = fs.existsSync(path.resolve(process.cwd(), 'credentials.json'))
+  ? path.resolve(process.cwd(), 'credentials.json')
+  : path.resolve(process.cwd(), '../credentials.json');
+
 
 async function testSheetsIntegration() {
   console.log('[Test] 1. Checking credentials file at:', credentialsPath);

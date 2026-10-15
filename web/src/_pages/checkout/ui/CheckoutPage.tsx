@@ -24,7 +24,7 @@ import {
 
 export function CheckoutPage() {
   const { activeReport } = useAppState();
-  const { chatId, setChatId } = useTelegramContext();
+  const { chatId, setChatId, leadName } = useTelegramContext();
 
   const toast = useToast();
   const [inputChatId, setInputChatId] = useState(chatId || '');
@@ -199,6 +199,7 @@ export function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chatId: effectiveChatId,
+          userName: activeReport.profile?.name || leadName || '',
           testId: activeReport.test.id,
           testTitle: activeReport.test.title,
           rating: feedbackData.rating,
